@@ -1,5 +1,6 @@
 {
 	"name": "n8n-zapier-clone",
+	"author": "Mark Wong",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
@@ -19,6 +20,7 @@
 		"@trpc/client": "^11.7.2",
 		"@trpc/server": "^11.7.2",
 		"@trpc/tanstack-react-query": "^11.7.2",
+		"better-auth": "^1.4.5",
 		"class-variance-authority": "^0.7.1",
 		"client-only": "^0.0.1",
 		"clsx": "^2.1.1",
