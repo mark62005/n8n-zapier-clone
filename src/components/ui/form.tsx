@@ -73,6 +73,12 @@ const FormItemContext = React.createContext<FormItemContextValue>(
 	{} as FormItemContextValue
 );
 
+/**
+ * Provides a form item container that supplies a stable `id` to descendants via context for accessibility.
+ *
+ * @param props - Standard div props; children are rendered inside the container.
+ * @returns The React element for the form item.
+ */
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 	const id = React.useId();
 
@@ -87,6 +93,13 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 	);
 }
 
+/**
+ * Render a form label tied to the current form field and its accessibility id, reflecting error state in styling.
+ *
+ * @param className - Additional CSS class names applied to the label
+ * @param props - Props forwarded to the underlying LabelPrimitive.Root
+ * @returns The label element associated with the current form item
+ */
 function FormLabel({
 	className,
 	...props
@@ -104,6 +117,13 @@ function FormLabel({
 	);
 }
 
+/**
+ * Renders a form control slot with accessibility attributes derived from the current form field state.
+ *
+ * The rendered Slot is given an id for the form item, an `aria-describedby` that includes the description and, when an error exists, the error message id, and `aria-invalid` when the field has an error. All other props are forwarded to the Slot.
+ *
+ * @returns A Slot element configured with `id`, `aria-describedby`, `aria-invalid`, `data-slot="form-control"`, and any forwarded props.
+ */
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
 	const { error, formItemId, formDescriptionId, formMessageId } =
 		useFormField();
@@ -123,6 +143,16 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
 	);
 }
 
+/**
+ * Renders the accessible description text for a form field.
+ *
+ * The element is assigned an id tied to the current form field so it can be referenced
+ * by form controls via `aria-describedby` and is styled with muted, small text by default.
+ *
+ * @param className - Additional CSS class names appended to the default description styles
+ * @param props - Additional attributes forwarded to the underlying `<p>` element
+ * @returns The `<p>` element containing the form field description with an accessibility id
+ */
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 	const { formDescriptionId } = useFormField();
 
@@ -136,6 +166,14 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 	);
 }
 
+/**
+ * Renders the field's message or error text tied to the current form field.
+ *
+ * If the field has a validation error, displays the error message; otherwise displays the component's children.
+ * If there is no message to show, renders nothing.
+ *
+ * @returns The paragraph element containing the message when present, `null` when there is no message.
+ */
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 	const { error, formMessageId } = useFormField();
 	const body = error ? String(error?.message ?? "") : props.children;

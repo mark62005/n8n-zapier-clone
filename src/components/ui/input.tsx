@@ -2,6 +2,12 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils/index";
 
+/**
+ * A styled input component that applies a consistent set of UI classes and forwards all standard input props.
+ *
+ * @param className - Additional CSS classes appended to the component's internal class list
+ * @returns A JSX `<input>` element with composed styling classes and forwarded props
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
 	return (
 		<input

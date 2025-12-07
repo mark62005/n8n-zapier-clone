@@ -1,6 +1,13 @@
 import { requireAuth } from "@/lib/utils/auth";
 import { caller } from "@/trpc/server";
 
+/**
+ * Renders the homepage and enforces authentication before producing output.
+ *
+ * When an authenticated user is present, the rendered UI includes a brief sign-in confirmation.
+ *
+ * @returns The React element for the homepage; if an authenticated user exists, includes a sign-in confirmation message.
+ */
 export default async function Home() {
 	await requireAuth();
 

@@ -33,6 +33,13 @@ const SIGN_IN_FORM_DEFAULT_VALUES: TSignUpFormValues = {
 	confirmPassword: "",
 };
 
+/**
+ * Renders the sign-up form UI for creating a new account.
+ *
+ * Shows OAuth buttons (GitHub, Google), inputs for name, email, password, and confirm password, and a submit button. Submitting attempts an email sign-up; on success it navigates to the home page, and on error it displays an error toast.
+ *
+ * @returns The sign-up form React element.
+ */
 function SignInForm() {
 	const router = useRouter();
 	const form = useForm<TSignUpFormValues>({

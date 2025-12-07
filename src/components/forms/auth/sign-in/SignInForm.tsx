@@ -31,6 +31,13 @@ const SIGN_IN_FORM_DEFAULT_VALUES: TSignInFormValues = {
 	password: "",
 };
 
+/**
+ * Render a sign-in form UI with GitHub/Google buttons and email/password fields.
+ *
+ * Handles form validation and submission to the authentication client; on successful sign-in navigates to "/", and on error displays a toast message.
+ *
+ * @returns A JSX element containing the sign-in form
+ */
 function SignInForm() {
 	const router = useRouter();
 	const form = useForm<TSignInFormValues>({
