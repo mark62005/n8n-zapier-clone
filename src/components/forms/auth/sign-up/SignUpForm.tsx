@@ -82,6 +82,12 @@ function SignInForm() {
 										disabled={isPending}
 										className="w-full"
 									>
+										<Image
+											src="/logos/github.svg"
+											alt="GitHub Logo"
+											width={20}
+											height={20}
+										/>
 										Continue with GitHub
 									</Button>
 
@@ -92,6 +98,12 @@ function SignInForm() {
 										disabled={isPending}
 										className="w-full"
 									>
+										<Image
+											src="/logos/google.svg"
+											alt="Google Logo"
+											width={20}
+											height={20}
+										/>
 										Continue with Google
 									</Button>
 								</div>

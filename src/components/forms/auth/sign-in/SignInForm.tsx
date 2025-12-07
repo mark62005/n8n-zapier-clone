@@ -79,6 +79,12 @@ function SignInForm() {
 										disabled={isPending}
 										className="w-full"
 									>
+										<Image
+											src="/logos/github.svg"
+											alt="GitHub Logo"
+											width={20}
+											height={20}
+										/>
 										Continue with GitHub
 									</Button>
 
@@ -89,6 +95,12 @@ function SignInForm() {
 										disabled={isPending}
 										className="w-full"
 									>
+										<Image
+											src="/logos/google.svg"
+											alt="Google Logo"
+											width={20}
+											height={20}
+										/>
 										Continue with Google
 									</Button>
 								</div>
@@ -140,6 +152,7 @@ function SignInForm() {
 									<Button
 										type="submit"
 										disabled={isPending}
+										variant={"default"}
 										className="w-full"
 									>
 										Sign In
