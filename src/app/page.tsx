@@ -1,17 +1,39 @@
+"use client";
+
 import SignOutButton from "@/components/auth/SignOutButton";
-import { requireAuth } from "@/lib/utils/auth";
-import { caller } from "@/trpc/server";
+import { Button } from "@/components/ui/button";
+import { useTRPC } from "@/trpc/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export default async function Home() {
-	await requireAuth();
+export default function Home() {
+	const trpc = useTRPC();
+	const queryClient = useQueryClient();
 
-	const authUser = await caller.auth.getAuthUser();
+	const { data: workflows } = useQuery(
+		trpc.workflows.getAllWorkflows.queryOptions()
+	);
+	const createWorkflow = useMutation(
+		trpc.workflows.createWorkflow.mutationOptions({
+			onSuccess: () => {
+				queryClient.invalidateQueries(
+					trpc.workflows.getAllWorkflows.queryOptions()
+				);
+			},
+		})
+	);
 
 	return (
 		<div className="min-h-screen min-w-screen flex flex-col items-center justify-center gap-y-6">
-			{authUser && <span>Signed in sucessfully.</span>}
+			<div>{JSON.stringify(workflows, null, 2)}</div>
 
-			{authUser && <SignOutButton />}
+			<Button
+				onClick={() => createWorkflow.mutate()}
+				disabled={createWorkflow.isPending}
+			>
+				Create workflow
+			</Button>
+
+			<SignOutButton />
 		</div>
 	);
 }
