@@ -79,3 +79,9 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+// Background Jobs Workflow
+model Workflow {
+  id   String @id @default(cuid())
+  name String
+}
