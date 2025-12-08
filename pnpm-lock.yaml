@@ -8,9 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/anthropic':
+        specifier: ^2.0.53
+        version: 2.0.53(zod@4.1.13)
       '@ai-sdk/google':
         specifier: ^2.0.44
         version: 2.0.44(zod@4.1.13)
+      '@ai-sdk/openai':
+        specifier: ^2.0.79
+        version: 2.0.79(zod@4.1.13)
       '@ai-sdk/react':
         specifier: ^2.0.109
         version: 2.0.109(react@19.2.0)(zod@4.1.13)
@@ -141,6 +147,12 @@ importers:
 
 packages:
 
+  '@ai-sdk/anthropic@2.0.53':
+    resolution: {integrity: sha512-ih7NV+OFSNWZCF+tYYD7ovvvM+gv7TRKQblpVohg2ipIwC9Y0TirzocJVREzZa/v9luxUwFbsPji++DUDWWxsg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
   '@ai-sdk/gateway@2.0.18':
     resolution: {integrity: sha512-sDQcW+6ck2m0pTIHW6BPHD7S125WD3qNkx/B8sEzJp/hurocmJ5Cni0ybExg6sQMGo+fr/GWOwpHF1cmCdg5rQ==}
     engines: {node: '>=18'}
@@ -149,6 +161,12 @@ packages:
 
   '@ai-sdk/google@2.0.44':
     resolution: {integrity: sha512-c5dck36FjqiVoeeMJQLTEmUheoURcGTU/nBT6iJu8/nZiKFT/y8pD85KMDRB7RerRYaaQOtslR2d6/5PditiRw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/openai@2.0.79':
+    resolution: {integrity: sha512-RIUbwD2VGpawSKUuZ0HmsDbyjPniQIa9wYyE3xQ5fIWnI+RZH8MfyRwnUFom1pko5YOGlhosZhJmvolG8lNr7Q==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -3627,6 +3645,12 @@ packages:
 
 snapshots:
 
+  '@ai-sdk/anthropic@2.0.53(zod@4.1.13)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.18(zod@4.1.13)
+      zod: 4.1.13
+
   '@ai-sdk/gateway@2.0.18(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
@@ -3635,6 +3659,12 @@ snapshots:
       zod: 4.1.13
 
   '@ai-sdk/google@2.0.44(zod@4.1.13)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.18(zod@4.1.13)
+      zod: 4.1.13
+
+  '@ai-sdk/openai@2.0.79(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.18(zod@4.1.13)
