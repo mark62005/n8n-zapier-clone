@@ -21,26 +21,41 @@ export const executeAi = inngest.createFunction(
 				model: google("gemini-2.5-flash"),
 				system: "You are a helpful assistant.",
 				prompt: "What is 2 + 2?",
+				experimental_telemetry: {
+					isEnabled: true,
+					recordInputs: true,
+					recordOutputs: true,
+				},
 			}
 		);
 
 		const { steps: openAiSteps } = await step.ai.wrap(
-			"gemini-generate-text",
+			"openai-generate-text",
 			generateText,
 			{
 				model: openAi("gpt-4"),
 				system: "You are a helpful assistant.",
 				prompt: "What is 2 + 2?",
+				experimental_telemetry: {
+					isEnabled: true,
+					recordInputs: true,
+					recordOutputs: true,
+				},
 			}
 		);
 
 		const { steps: anthropicSteps } = await step.ai.wrap(
-			"gemini-generate-text",
+			"anthropic-generate-text",
 			generateText,
 			{
 				model: anthropicAi("claude-sonnet-4-0"),
 				system: "You are a helpful assistant.",
 				prompt: "What is 2 + 2?",
+				experimental_telemetry: {
+					isEnabled: true,
+					recordInputs: true,
+					recordOutputs: true,
+				},
 			}
 		);
 
