@@ -13,6 +13,9 @@ Sentry.init({
 			recordInputs: true,
 			recordOutputs: true,
 		}),
+
+		// send console.log, console.warn, and console.error calls as logs to Sentry
+		Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
 	],
 
 	// Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.

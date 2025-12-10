@@ -3,6 +3,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { inngest } from "../client";
 import { generateText } from "ai";
+import * as Sentry from "@sentry/nextjs";
 
 const google = createGoogleGenerativeAI();
 const openAi = createOpenAI();
@@ -13,6 +14,10 @@ export const executeAi = inngest.createFunction(
 	{ event: "test/execute.ai" },
 	async ({ step }) => {
 		await step.sleep("pretend", "5s");
+
+		Sentry.logger.info("User triggered test log", {
+			log_source: "setnry_test",
+		});
 
 		const { steps: geminiSteps } = await step.ai.wrap(
 			"gemini-generate-text",
