@@ -1,4 +1,8 @@
-function ExecutionsPage() {
+import { requireAuth } from "@/lib/utils/auth";
+
+async function ExecutionsPage() {
+	await requireAuth();
+
 	return (
 		<div>
 			<div className=""></div>ExecutionsPage
