@@ -3,6 +3,7 @@ import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { createTRPCRouter, baseProcedure, protectedProcedure } from "../index";
 import { inngest } from "@/inngest/client";
+import prisma from "@/lib/db/db";
 
 export const testingRouter = createTRPCRouter({
 	hello: baseProcedure
@@ -27,6 +28,22 @@ export const testingRouter = createTRPCRouter({
 		});
 
 		return { success: true, message: "AI Job queued." };
+	}),
+	testWorkflow: protectedProcedure.mutation(async () => {
+		// Fetch video
+		await new Promise((resolve) => setTimeout(resolve, 5_000));
+
+		// Transcribe video
+		await new Promise((resolve) => setTimeout(resolve, 5_000));
+
+		// Send the transcription to OpenAI
+		await new Promise((resolve) => setTimeout(resolve, 5_000));
+
+		return prisma.workflow.create({
+			data: {
+				name: "test-workflow",
+			},
+		});
 	}),
 });
 
