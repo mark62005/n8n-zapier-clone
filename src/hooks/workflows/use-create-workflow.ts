@@ -12,7 +12,7 @@ export function useCreateWorkflow() {
 				toast.success(`Workflow "${data.name}" created successfully.`);
 
 				queryClient.invalidateQueries(
-					trpc.workflows.getAllWorkflowsOfAUser.queryOptions()
+					trpc.workflows.getAllWorkflowsOfAUser.queryOptions({})
 				);
 			},
 			onError: (error) => {

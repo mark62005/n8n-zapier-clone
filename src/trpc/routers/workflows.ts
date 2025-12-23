@@ -2,6 +2,7 @@ import z from "zod";
 import { generateSlug } from "random-word-slugs";
 import prisma from "@/lib/db/db";
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "..";
+import { PAGINATION } from "@/lib/constants/configs/dashboard/Pagination";
 
 export const workflowsRouter = createTRPCRouter({
 	/* GET ALL WORKFLOWS */
@@ -20,13 +21,59 @@ export const workflowsRouter = createTRPCRouter({
 			});
 		}),
 	/* GET ALL WORKFLOWS OF A USER */
-	getAllWorkflowsOfAUser: protectedProcedure.query(({ ctx }) => {
-		return prisma.workflow.findMany({
-			where: {
-				userId: ctx.authSession.user.id,
-			},
-		});
-	}),
+	getAllWorkflowsOfAUser: protectedProcedure
+		.input(
+			z.object({
+				page: z.number().default(PAGINATION.DEFAULT_PAGE),
+				pageSize: z
+					.number()
+					.min(PAGINATION.MIN_PAGE_SIZE)
+					.max(PAGINATION.MAX_PAGE_SIZE)
+					.default(PAGINATION.DEFAULT_PAGE_SIZE),
+				searchQuery: z.string().default(""),
+			})
+		)
+		.query(async ({ ctx, input }) => {
+			const { page, pageSize, searchQuery } = input;
+
+			const [workflows, totalNumberOfWorkflowsOfAUser] = await Promise.all([
+				prisma.workflow.findMany({
+					skip: (page - 1) * pageSize,
+					take: pageSize,
+					where: {
+						userId: ctx.authSession.user.id,
+						name: {
+							contains: searchQuery,
+							mode: "insensitive",
+						},
+					},
+					orderBy: {
+						updatedAt: "desc",
+					},
+				}),
+				prisma.workflow.count({
+					where: {
+						userId: ctx.authSession.user.id,
+					},
+				}),
+			]);
+
+			const totalNumberOfPages = Math.ceil(
+				totalNumberOfWorkflowsOfAUser / pageSize
+			);
+			const hasNextPage = page < totalNumberOfPages;
+			const hasPreviousPage = page > 1;
+
+			return {
+				workflows,
+				page,
+				pageSize,
+				totalNumberOfWorkflowsOfAUser,
+				totalNumberOfPages,
+				hasNextPage,
+				hasPreviousPage,
+			};
+		}),
 	/* CREATE A NEW WORKFLOW */
 	createWorkflow: premiumProcedure.mutation(async ({ ctx }) => {
 		return await prisma.workflow.create({
