@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import { useState } from "react";
+import superjson from "superjson";
 import { makeQueryClient } from "./query-client";
 import type { TAppRouter } from "./routers/index";
 import { IGeneralLayoutProps } from "@/types/app/layout-props/GeneralLayoutProps";
@@ -48,7 +49,7 @@ export function TRPCReactProvider({ children }: Readonly<IGeneralLayoutProps>) {
 		createTRPCClient<TAppRouter>({
 			links: [
 				httpBatchLink({
-					// transformer: superjson, <-- if you use a data transformer
+					transformer: superjson,
 					url: getUrl(),
 				}),
 			],

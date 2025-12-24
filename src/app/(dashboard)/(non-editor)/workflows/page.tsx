@@ -7,6 +7,8 @@ import WorkflowList from "@/components/dashboard/workflows/WorkflowList";
 import WorkflowsContainer from "@/components/dashboard/workflows/WorkflowList/WorkflowsContainer";
 import { IWorkflowsPageProps } from "@/types/app/page-props/dashboard/non-editor/workflows/IWorkflowsPageProps";
 import { workflowsParamsLoader } from "@/lib/utils/workflows/params/params-loader";
+import WorkflowsErrorView from "@/components/dashboard/workflows/WorkflowsErrorView";
+import WorkflowsLoadingView from "@/components/dashboard/workflows/WorkflowsLoadingView";
 
 async function WorkflowsPage({ searchParams }: IWorkflowsPageProps) {
 	await requireAuth();
@@ -17,8 +19,8 @@ async function WorkflowsPage({ searchParams }: IWorkflowsPageProps) {
 	return (
 		<WorkflowsContainer>
 			<HydrateClient>
-				<ErrorBoundary fallback={<p>Error fetching workflows.</p>}>
-					<Suspense fallback={<p>Loading...</p>}>
+				<ErrorBoundary fallback={<WorkflowsErrorView />}>
+					<Suspense fallback={<WorkflowsLoadingView />}>
 						<WorkflowList />
 					</Suspense>
 				</ErrorBoundary>
