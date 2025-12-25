@@ -1,8 +1,9 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { APP_HEADER_CLASSNAME } from "@/lib/constants/configs/dashboard/app-header";
 
 function AppHeader() {
 	return (
-		<header className="flex items-center gap-2 shrink-0 h-14 px-4 bg-background border-b">
+		<header className={APP_HEADER_CLASSNAME}>
 			<SidebarTrigger />
 		</header>
 	);
