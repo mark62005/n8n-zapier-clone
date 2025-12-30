@@ -8,10 +8,6 @@ import NodeSelector from "../nodes/NodeSelector";
 function AddNodeButton() {
 	const [selectorOpen, setSelectorOpen] = useState<boolean>(false);
 
-	function handleClick() {
-		console.log("AddNodeButton clicked.");
-	}
-
 	return (
 		<NodeSelector
 			open={selectorOpen}
@@ -20,7 +16,6 @@ function AddNodeButton() {
 			<Button
 				size="icon"
 				variant="outline"
-				onClick={handleClick}
 				className="bg-background"
 			>
 				<PlusIcon />

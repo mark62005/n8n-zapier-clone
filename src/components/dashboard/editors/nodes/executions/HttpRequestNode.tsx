@@ -18,7 +18,7 @@ interface IHttpRequestNodeData {
 type THttpRequestNodeType = TNode<IHttpRequestNodeData>;
 
 function HttpRequestNode(props: TNodeProps<THttpRequestNodeType>) {
-	const nodeData = props.data as IHttpRequestNodeData;
+	const nodeData = props.data;
 	const description = nodeData?.endpoint
 		? `${nodeData.method || "GET"}: ${nodeData.endpoint}`
 		: "Not configured";
