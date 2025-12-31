@@ -16,15 +16,19 @@ import {
 	MiniMap,
 	Panel,
 } from "@xyflow/react";
+import { useSetAtom } from "jotai";
+import { editorAtom } from "@/store/atoms";
 import { IGeneralEditorProps } from "@/types/app/components/component-props/dashboard/editors/IGeneralEditorProps";
 import { useSuspenseWorkflowById } from "@/hooks/workflows/use-suspense-workflow-by-id";
-
-import "@xyflow/react/dist/style.css";
 import { NODE_COMPONENTS_CONFIG } from "@/lib/constants/configs/dashboard/editors/node-components";
 import AddNodeButton from "./buttons/AddNodeButton";
 
+import "@xyflow/react/dist/style.css";
+
 function Editor({ workflowId }: IGeneralEditorProps) {
 	const { data: workflow } = useSuspenseWorkflowById(workflowId);
+
+	const setEditor = useSetAtom(editorAtom);
 
 	const [nodes, setNodes] = useState<TNode[]>(workflow.nodes);
 	const [edges, setEdges] = useState<TEdge[]>(workflow.edges);
@@ -54,6 +58,7 @@ function Editor({ workflowId }: IGeneralEditorProps) {
 				onEdgesChange={onEdgesChange}
 				onConnect={onConnect}
 				nodeTypes={NODE_COMPONENTS_CONFIG}
+				onInit={setEditor}
 				fitView
 			>
 				<Background />

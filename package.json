@@ -47,6 +47,7 @@
 		"date-fns": "^4.1.0",
 		"import-in-the-middle": "^2.0.0",
 		"inngest": "^3.47.0",
+		"jotai": "^2.16.1",
 		"lucide-react": "^0.556.0",
 		"mprocs": "^0.7.3",
 		"next": "16.0.7",
