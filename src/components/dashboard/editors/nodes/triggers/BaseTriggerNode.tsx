@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import Image from "next/image";
-import { Position } from "@xyflow/react";
+import { Position, useReactFlow } from "@xyflow/react";
 import type { IBaseTriggerNodeProps } from "@/types/app/components/component-props/dashboard/editors/nodes/IBaseTriggerNodeProps";
 import {
 	BaseNode,
@@ -21,9 +21,22 @@ function BaseTriggerNode({
 	onDoubleClick,
 	children,
 }: IBaseTriggerNodeProps) {
+	const { setNodes, setEdges } = useReactFlow();
+
 	function handleDelete() {
-		// TODO Add delete method
-		console.log("DeleteButton Clicked.");
+		setNodes((currentNodes) => {
+			const filteredNodes = currentNodes.filter((node) => node.id !== id);
+
+			return filteredNodes;
+		});
+
+		setEdges((currentEdges) => {
+			const filteredEdges = currentEdges.filter(
+				(edge) => edge.source !== id && edge.target !== id
+			);
+
+			return filteredEdges;
+		});
 	}
 
 	return (
