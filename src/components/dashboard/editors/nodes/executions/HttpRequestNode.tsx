@@ -5,6 +5,7 @@ import {
 	type NodeProps as TNodeProps,
 	type Node as TNode,
 } from "@xyflow/react";
+import type { TNodeStatus } from "@/components/ui/react-flow/node-status-indicator";
 import { GlobeIcon } from "lucide-react";
 import BaseExecutionNode from "./BaseExecutionNode";
 
@@ -23,6 +24,8 @@ function HttpRequestNode(props: TNodeProps<THttpRequestNodeType>) {
 		? `${nodeData.method || "GET"}: ${nodeData.endpoint}`
 		: "Not configured";
 
+	const nodeStatus: TNodeStatus = "initial";
+
 	function handleSettingsClick() {
 		// TODO
 	}
@@ -37,6 +40,7 @@ function HttpRequestNode(props: TNodeProps<THttpRequestNodeType>) {
 				Icon={GlobeIcon}
 				name="HTTP Request"
 				description={description}
+				status={nodeStatus}
 				onSettings={handleSettingsClick}
 				onDoubleClick={handleDoubleClick}
 			/>

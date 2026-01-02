@@ -1,13 +1,18 @@
 import type { ComponentProps } from "react";
+import type { TNodeStatus } from "./node-status-indicator";
 
 import { cn } from "@/lib/utils/index";
+import { CheckCircle2Icon, Loader2Icon, XCircleIcon } from "lucide-react";
 
-export function BaseNode({ className, ...props }: ComponentProps<"div">) {
+interface IBaseNodeProps extends ComponentProps<"div"> {
+	status?: TNodeStatus;
+}
+
+export function BaseNode({ className, status, ...props }: IBaseNodeProps) {
 	return (
 		<div
 			className={cn(
-				"bg-card text-card-foreground relative rounded-md border",
-				"hover:ring-1",
+				"bg-card text-card-foreground relative rounded-sm border border-muted-foreground hover:bg-accent",
 				// React Flow displays node elements inside of a `NodeWrapper` component,
 				// which compiles down to a div with the class `react-flow__node`.
 				// When a node is selected, the class `selected` is added to the
@@ -19,7 +24,11 @@ export function BaseNode({ className, ...props }: ComponentProps<"div">) {
 			)}
 			tabIndex={0}
 			{...props}
-		/>
+		>
+			{props.children}
+
+			{status && <NodeStatusIcon status={status} />}
+		</div>
 	);
 }
 
@@ -85,4 +94,37 @@ export function BaseNodeFooter({ className, ...props }: ComponentProps<"div">) {
 			{...props}
 		/>
 	);
+}
+
+const NODE_STATUS_ICON_CLASSNAME =
+	"absolute right-0.5 bottom-0.5 size-2 stroke-3";
+
+export function NodeStatusIcon({ status }: { status: TNodeStatus }) {
+	switch (status) {
+		case "loading":
+			return (
+				<Loader2Icon
+					className={cn(
+						NODE_STATUS_ICON_CLASSNAME,
+						"text-blue-700 animate-spin -right-0.5 -bottom-0.5"
+					)}
+				/>
+			);
+		case "success":
+			return (
+				<CheckCircle2Icon
+					className={cn(NODE_STATUS_ICON_CLASSNAME, "text-green-700")}
+				/>
+			);
+		case "error":
+			return (
+				<XCircleIcon
+					className={cn(NODE_STATUS_ICON_CLASSNAME, "text-red-700")}
+				/>
+			);
+		case "initial":
+			return;
+		default:
+			return;
+	}
 }
