@@ -60,6 +60,11 @@ function Editor({ workflowId }: IGeneralEditorProps) {
 				nodeTypes={NODE_COMPONENTS_CONFIG}
 				onInit={setEditor}
 				fitView
+				snapGrid={[10, 10]}
+				snapToGrid
+				panOnScroll
+				panOnDrag={false}
+				selectionOnDrag
 			>
 				<Background />
 				<Controls />
