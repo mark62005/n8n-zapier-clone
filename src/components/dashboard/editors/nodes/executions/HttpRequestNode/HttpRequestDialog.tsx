@@ -1,7 +1,7 @@
 "use client";
 
 import type { IHttpRequestDialogProps } from "@/types/app/components/component-props/dashboard/editors/nodes/http-request/IHttpRequestDialogProp";
-import type { THttpRequestNodeSettingsForm } from "@/types/app/components/forms/nodes/http-request/THttpRequestNodeSettingsForm";
+import type { THttpRequestNodeSettingsFormValues } from "@/types/app/components/forms/nodes/http-request/THttpRequestNodeSettingsForm";
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -39,17 +39,15 @@ import { Button } from "@/components/ui/button";
 function HttpRequestDialog({
 	open,
 	onOpenChange,
-	defaultEndpoint = "",
-	defaultMethod = "GET",
-	defaultBody = "",
+	defaultValues,
 	onSubmit,
 }: IHttpRequestDialogProps) {
-	const form = useForm<THttpRequestNodeSettingsForm>({
+	const form = useForm<THttpRequestNodeSettingsFormValues>({
 		resolver: zodResolver(httpRequestNodeSettingsFormSchema),
 		defaultValues: {
-			endpoint: defaultEndpoint,
-			method: defaultMethod,
-			body: defaultBody,
+			endpoint: defaultValues?.endpoint || "",
+			method: defaultValues?.method || "GET",
+			body: defaultValues?.body || "",
 		},
 	});
 
@@ -57,17 +55,17 @@ function HttpRequestDialog({
 	useEffect(() => {
 		if (open) {
 			form.reset({
-				endpoint: defaultEndpoint,
-				method: defaultMethod,
-				body: defaultBody,
+				endpoint: defaultValues?.endpoint || "",
+				method: defaultValues?.method || "GET",
+				body: defaultValues?.body || "",
 			});
 		}
-	}, [open, form, defaultEndpoint, defaultMethod, defaultBody]);
+	}, [open, form, defaultValues]);
 
 	const watchMethod = form.watch("method");
 	const isShowingBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
-	function handleSubmit(values: THttpRequestNodeSettingsForm) {
+	function handleSubmit(values: THttpRequestNodeSettingsFormValues) {
 		onSubmit(values);
 		onOpenChange(false);
 	}

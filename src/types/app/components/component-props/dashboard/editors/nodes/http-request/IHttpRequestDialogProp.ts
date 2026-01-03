@@ -2,10 +2,9 @@ import type { INodeDialogProps } from "./INodeDialogProps";
 
 import z from "zod";
 import { httpRequestNodeSettingsFormSchema } from "@/components/forms/dashboard/HttpRequestNodeSettingsForm/schema";
+import { THttpRequestNodeSettingsFormValues } from "@/types/app/components/forms/nodes/http-request/THttpRequestNodeSettingsForm";
 
 export interface IHttpRequestDialogProps extends INodeDialogProps {
-	defaultEndpoint?: string;
-	defaultMethod?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-	defaultBody?: string;
+	defaultValues?: Partial<THttpRequestNodeSettingsFormValues>;
 	onSubmit: (values: z.infer<typeof httpRequestNodeSettingsFormSchema>) => void;
 }

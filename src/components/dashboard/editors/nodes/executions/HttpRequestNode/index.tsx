@@ -2,7 +2,7 @@
 
 import type { Node as TNode } from "@xyflow/react";
 import type { TNodeStatus } from "@/components/ui/react-flow/node-status-indicator";
-import type { THttpRequestNodeSettingsForm } from "@/types/app/components/forms/nodes/http-request/THttpRequestNodeSettingsForm";
+import type { THttpRequestNodeSettingsFormValues } from "@/types/app/components/forms/nodes/http-request/THttpRequestNodeSettingsForm";
 import type { THttpRequestNodeSettingsFormProps } from "@/types/app/components/component-props/dashboard/editors/nodes/http-request/THttpRequestNodeSettingsFormProps";
 
 import { memo, useState } from "react";
@@ -27,9 +27,7 @@ function HttpRequestNode(props: THttpRequestNodeSettingsFormProps) {
 		setDialogOpen(true);
 	}
 
-	function handleFormSubmit(values: THttpRequestNodeSettingsForm) {
-		const { endpoint, method, body } = values;
-
+	function handleFormSubmit(values: THttpRequestNodeSettingsFormValues) {
 		setNodes((nodes: TNode[]) =>
 			nodes.map((node: TNode) => {
 				if (node.id === props.id) {
@@ -37,9 +35,7 @@ function HttpRequestNode(props: THttpRequestNodeSettingsFormProps) {
 						...node,
 						data: {
 							...node.data,
-							endpoint: endpoint,
-							method: method,
-							body: body,
+							...values,
 						},
 					};
 				}
@@ -54,9 +50,7 @@ function HttpRequestNode(props: THttpRequestNodeSettingsFormProps) {
 			<HttpRequestDialog
 				open={dialogOpen}
 				onOpenChange={setDialogOpen}
-				defaultEndpoint={nodeData.endpoint}
-				defaultMethod={nodeData.method}
-				defaultBody={nodeData.body}
+				defaultValues={nodeData}
 				onSubmit={handleFormSubmit}
 			/>
 
