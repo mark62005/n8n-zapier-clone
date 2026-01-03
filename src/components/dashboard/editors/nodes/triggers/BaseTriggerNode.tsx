@@ -1,14 +1,17 @@
 "use client";
 
+import type { IBaseTriggerNodeProps } from "@/types/app/components/component-props/dashboard/editors/nodes/executions/IBaseTriggerNodeProps";
+
 import { memo } from "react";
+import { Position, useReactFlow } from "@xyflow/react";
+
 import Image from "next/image";
-import { Position } from "@xyflow/react";
-import type { IBaseTriggerNodeProps } from "@/types/app/components/component-props/dashboard/editors/nodes/IBaseTriggerNodeProps";
 import {
 	BaseNode,
 	BaseNodeContent,
 } from "@/components/ui/react-flow/base-node";
 import { BaseHandle } from "@/components/ui/react-flow/base-handle";
+import { NodeStatusIndicator } from "@/components/ui/react-flow/node-status-indicator";
 import WorkflowNode from "../WorkflowNode";
 
 function BaseTriggerNode({
@@ -16,14 +19,27 @@ function BaseTriggerNode({
 	Icon,
 	name,
 	description,
-	// status,
+	status = "initial",
 	onSettings,
 	onDoubleClick,
 	children,
 }: IBaseTriggerNodeProps) {
+	const { setNodes, setEdges } = useReactFlow();
+
 	function handleDelete() {
-		// TODO Add delete method
-		console.log("DeleteButton Clicked.");
+		setNodes((currentNodes) => {
+			const filteredNodes = currentNodes.filter((node) => node.id !== id);
+
+			return filteredNodes;
+		});
+
+		setEdges((currentEdges) => {
+			const filteredEdges = currentEdges.filter(
+				(edge) => edge.source !== id && edge.target !== id
+			);
+
+			return filteredEdges;
+		});
 	}
 
 	return (
@@ -33,32 +49,38 @@ function BaseTriggerNode({
 			onDelete={handleDelete}
 			onSettings={onSettings}
 		>
-			{/* TODO: Wrap within  NodeStatusIndicator */}
-			<BaseNode
-				onDoubleClick={onDoubleClick}
-				className="relative group rounded-l-2xl"
+			<NodeStatusIndicator
+				status={status}
+				variant="border"
+				className="rounded-l-2xl"
 			>
-				<BaseNodeContent>
-					{typeof Icon === "string" ? (
-						<Image
-							src={Icon}
-							alt={name}
-							width={16}
-							height={16}
+				<BaseNode
+					status={status}
+					onDoubleClick={onDoubleClick}
+					className="relative group rounded-l-2xl"
+				>
+					<BaseNodeContent>
+						{typeof Icon === "string" ? (
+							<Image
+								src={Icon}
+								alt={name}
+								width={16}
+								height={16}
+							/>
+						) : (
+							<Icon className="size-4 text-muted-foreground" />
+						)}
+
+						{children}
+
+						<BaseHandle
+							id="source-1"
+							type="source"
+							position={Position.Right}
 						/>
-					) : (
-						<Icon className="size-4 text-muted-foreground" />
-					)}
-
-					{children}
-
-					<BaseHandle
-						id="source-1"
-						type="source"
-						position={Position.Right}
-					/>
-				</BaseNodeContent>
-			</BaseNode>
+					</BaseNodeContent>
+				</BaseNode>
+			</NodeStatusIndicator>
 		</WorkflowNode>
 	);
 }
