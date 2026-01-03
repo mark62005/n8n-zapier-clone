@@ -1,16 +1,18 @@
 "use client";
 
+import type { IBaseTriggerNodeProps } from "@/types/app/components/component-props/dashboard/editors/nodes/executions/IBaseTriggerNodeProps";
+
 import { memo } from "react";
-import Image from "next/image";
 import { Position, useReactFlow } from "@xyflow/react";
-import type { IBaseTriggerNodeProps } from "@/types/app/components/component-props/dashboard/editors/nodes/triggers/IBaseTriggerNodeProps";
+
+import Image from "next/image";
 import {
 	BaseNode,
 	BaseNodeContent,
 } from "@/components/ui/react-flow/base-node";
 import { BaseHandle } from "@/components/ui/react-flow/base-handle";
-import WorkflowNode from "../WorkflowNode";
 import { NodeStatusIndicator } from "@/components/ui/react-flow/node-status-indicator";
+import WorkflowNode from "../WorkflowNode";
 
 function BaseTriggerNode({
 	id,

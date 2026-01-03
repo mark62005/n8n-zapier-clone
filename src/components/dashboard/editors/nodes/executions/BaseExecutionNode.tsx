@@ -1,9 +1,11 @@
 "use client";
 
+import type { IBaseExecutionNodeProps } from "@/types/app/components/component-props/dashboard/editors/nodes/executions/IBaseExecutionNodeProps";
+
 import { memo } from "react";
-import Image from "next/image";
 import { Position, useReactFlow } from "@xyflow/react";
-import type { IBaseExecutionNodeProps } from "@/types/app/components/component-props/dashboard/editors/nodes/IBaseExecutionNodeProps";
+
+import Image from "next/image";
 import {
 	BaseNode,
 	BaseNodeContent,
