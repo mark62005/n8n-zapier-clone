@@ -6,7 +6,15 @@ import {
 import { type IHttpRequestNodeData } from "@/types/app/workflows/nodes/IHttpRequestNodeData";
 
 import ky from "ky";
+import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
+
+Handlebars.registerHelper("json", (context) => {
+	const jsonString = JSON.stringify(context, null, 2);
+	const safeString = new Handlebars.SafeString(jsonString);
+
+	return safeString;
+});
 
 export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 	data,
@@ -40,18 +48,20 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 
 	const result = await step.run("http-request", async () => {
 		const method = data.method;
-		const endpoint = data.endpoint;
+
+		// Parse previous workflow data for syntax templating
+		const endpoint = Handlebars.compile(data.endpoint)(context);
 
 		const options: TKyOptions = { method };
 
 		if (["POST", "PUT", "PATCH"].includes(method)) {
-			if (data.body) {
-				// TODO: Parse the json body from http request node
-				options.body = data.body;
-				options.headers = {
-					"Content-Type": "application/json",
-				};
-			}
+			const resolvedBody = Handlebars.compile(data.body || "{}")(context);
+			JSON.parse(resolvedBody);
+
+			options.body = resolvedBody;
+			options.headers = {
+				"Content-Type": "application/json",
+			};
 		}
 
 		const response = await ky(endpoint, options);
