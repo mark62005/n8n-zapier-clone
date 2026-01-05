@@ -1,11 +1,5 @@
 import type { NodeProps as TNodeProps, Node as TNode } from "@xyflow/react";
-
-interface IHttpRequestNodeData {
-	endpoint?: string;
-	method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-	body?: string;
-	[key: string]: unknown;
-}
+import type { IHttpRequestNodeData } from "@/types/app/workflows/nodes/IHttpRequestNodeData";
 
 type THttpRequestNodeType = TNode<IHttpRequestNodeData>;
 
