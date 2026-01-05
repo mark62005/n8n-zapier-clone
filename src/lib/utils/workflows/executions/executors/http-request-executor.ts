@@ -40,6 +40,9 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 			if (data.body) {
 				// TODO: Parse the json body from http request node
 				options.body = data.body;
+				options.headers = {
+					"Content-Type": "application/json",
+				};
 			}
 		}
 
