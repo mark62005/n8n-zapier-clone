@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
 	type Node as TNode,
 	type Edge as TEdge,
@@ -20,8 +20,10 @@ import { useSetAtom } from "jotai";
 import { editorAtom } from "@/store/atoms";
 import { IGeneralEditorProps } from "@/types/app/components/component-props/dashboard/editors/IGeneralEditorProps";
 import { useSuspenseWorkflowById } from "@/hooks/workflows/use-suspense-workflow-by-id";
+import { NodeType } from "@/generated/prisma/enums";
 import { NODE_COMPONENTS_CONFIG } from "@/lib/constants/configs/dashboard/editors/node-components";
 import AddNodeButton from "./buttons/AddNodeButton";
+import ExecuteWorkflowButton from "./buttons/ExecuteWorkflowButton";
 
 import "@xyflow/react/dist/style.css";
 
@@ -49,6 +51,10 @@ function Editor({ workflowId }: IGeneralEditorProps) {
 		[]
 	);
 
+	const hasManualTrigger = useMemo(() => {
+		return nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER);
+	}, [nodes]);
+
 	return (
 		<div className="size-full">
 			<ReactFlow
@@ -73,6 +79,12 @@ function Editor({ workflowId }: IGeneralEditorProps) {
 				<Panel position="top-right">
 					<AddNodeButton />
 				</Panel>
+
+				{hasManualTrigger && (
+					<Panel position="bottom-center">
+						<ExecuteWorkflowButton workflowId={workflowId} />
+					</Panel>
+				)}
 			</ReactFlow>
 		</div>
 	);
