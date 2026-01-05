@@ -45,6 +45,7 @@ function HttpRequestDialog({
 	const form = useForm<THttpRequestNodeSettingsFormValues>({
 		resolver: zodResolver(httpRequestNodeSettingsFormSchema),
 		defaultValues: {
+			variableName: defaultValues?.variableName || "",
 			endpoint: defaultValues?.endpoint || "",
 			method: defaultValues?.method || "GET",
 			body: defaultValues?.body || "",
@@ -55,6 +56,7 @@ function HttpRequestDialog({
 	useEffect(() => {
 		if (open) {
 			form.reset({
+				variableName: defaultValues?.variableName || "",
 				endpoint: defaultValues?.endpoint || "",
 				method: defaultValues?.method || "GET",
 				body: defaultValues?.body || "",
@@ -62,6 +64,7 @@ function HttpRequestDialog({
 		}
 	}, [open, form, defaultValues]);
 
+	const watchVariableName = form.watch("variableName") || "my_api_call";
 	const watchMethod = form.watch("method");
 	const isShowingBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
@@ -88,6 +91,33 @@ function HttpRequestDialog({
 						onSubmit={form.handleSubmit(handleSubmit)}
 						className="space-y-8 mt-4"
 					>
+						{/* VARIABLE NAME */}
+						<FormField
+							control={form.control}
+							name="variableName"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="variableName">Variable Name</FormLabel>
+
+									<FormControl>
+										<Input
+											id="variableName"
+											placeholder="my_api_call"
+											required
+											{...field}
+										/>
+									</FormControl>
+
+									<FormDescription>
+										Use this name to reference the result in other nodes:{" "}
+										{`{{${watchVariableName}.httpResponse.data}}`}
+									</FormDescription>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
 						{/* METHOD */}
 						<FormField
 							control={form.control}
