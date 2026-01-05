@@ -30,6 +30,13 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 		);
 	}
 
+	if (!data.variableName) {
+		// TODO: Publish "error" state for http request
+		throw new NonRetriableError(
+			"Variable name not configured from HTTP Request node."
+		);
+	}
+
 	const result = await step.run("http-request", async () => {
 		const method = data.method!;
 		const endpoint = data.endpoint!;
@@ -49,20 +56,29 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 		const response = await ky(endpoint, options);
 		const contentType = response.headers.get("content-type");
 
-		// TODO: Return multiple json data if needed
 		const responseData = contentType?.includes("application/json")
 			? await response.json()
 			: await response.text();
 
-		const httpResponse = {
-			status: response.status,
-			statusText: response.statusText,
-			data: responseData,
+		const responsePayload = {
+			httpResponse: {
+				status: response.status,
+				statusText: response.statusText,
+				data: responseData,
+			},
 		};
 
+		if (data.variableName) {
+			return {
+				...context,
+				[data.variableName]: responsePayload,
+			};
+		}
+
+		// Fallback to direct httpResponse for backward compatibility
 		return {
 			...context,
-			httpResponse,
+			...responsePayload,
 		};
 	});
 
