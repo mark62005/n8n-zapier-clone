@@ -16,6 +16,7 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 }: INodeExecutorParams<IHttpRequestNodeData>) => {
 	// TODO: Publish "loading" state for http request
 
+	// Runtime validation
 	if (!data.method) {
 		// TODO: Publish "error" state for http request
 		throw new NonRetriableError(
@@ -38,8 +39,8 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 	}
 
 	const result = await step.run("http-request", async () => {
-		const method = data.method!;
-		const endpoint = data.endpoint!;
+		const method = data.method;
+		const endpoint = data.endpoint;
 
 		const options: TKyOptions = { method };
 
@@ -68,17 +69,9 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 			},
 		};
 
-		if (data.variableName) {
-			return {
-				...context,
-				[data.variableName]: responsePayload,
-			};
-		}
-
-		// Fallback to direct httpResponse for backward compatibility
 		return {
 			...context,
-			...responsePayload,
+			[data.variableName]: responsePayload,
 		};
 	});
 
