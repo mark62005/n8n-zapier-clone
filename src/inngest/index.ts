@@ -1,4 +1,3 @@
-import { helloWorld } from "./handlers/hello-world";
-import { executeAi } from "./handlers/test-ai";
+import { executeWorkflow } from "./handlers/execute-workflow";
 
-export const inngestFunctions = [executeAi];
+export const inngestFunctions = [executeWorkflow];
