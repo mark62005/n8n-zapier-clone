@@ -1,12 +1,15 @@
 "use client";
 
 import type { Node as TNode } from "@xyflow/react";
-import type { TNodeStatus } from "@/components/ui/react-flow/node-status-indicator";
 import type { THttpRequestNodeSettingsFormValues } from "@/types/app/components/forms/nodes/http-request/THttpRequestNodeSettingsForm";
 import type { THttpRequestNodeSettingsFormProps } from "@/types/app/components/component-props/dashboard/editors/nodes/http-request/THttpRequestNodeSettingsFormProps";
 
+import { HTTP_REQUEST_CHANNEL_NAME } from "@/inngest/channels/http-request";
+
 import { memo, useState } from "react";
 import { useReactFlow } from "@xyflow/react";
+import { useNodeStatus } from "@/hooks/workflows/nodes/use-node-status";
+import { fetchHttpRequestRealtimeToken } from "@/actions/executions/http-request/actions";
 
 import { GlobeIcon } from "lucide-react";
 import BaseExecutionNode from "../BaseExecutionNode";
@@ -16,7 +19,12 @@ function HttpRequestNode(props: THttpRequestNodeSettingsFormProps) {
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 	const { setNodes } = useReactFlow();
 
-	const nodeStatus: TNodeStatus = "initial";
+	const nodeStatus = useNodeStatus({
+		nodeId: props.id,
+		channel: HTTP_REQUEST_CHANNEL_NAME,
+		topic: "status",
+		refreshToken: fetchHttpRequestRealtimeToken,
+	});
 
 	const nodeData = props.data;
 	const description = nodeData?.endpoint
