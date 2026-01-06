@@ -8,6 +8,7 @@ import { type IHttpRequestNodeData } from "@/types/app/workflows/nodes/IHttpRequ
 import ky from "ky";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 Handlebars.registerHelper("json", (context) => {
 	try {
@@ -26,106 +27,146 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 	nodeId,
 	context,
 	step,
+	publish,
 }: INodeExecutorParams<IHttpRequestNodeData>) => {
-	// TODO: Publish "loading" state for http request
+	await publish(
+		httpRequestChannel().status({
+			nodeId,
+			status: "loading",
+		})
+	);
 
 	// Runtime validation
 	if (!data.method) {
-		// TODO: Publish "error" state for http request
+		await publish(
+			httpRequestChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
 		throw new NonRetriableError(
 			"Method not configured from HTTP Request node."
 		);
 	}
 
 	if (!data.endpoint) {
-		// TODO: Publish "error" state for http request
+		await publish(
+			httpRequestChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
 		throw new NonRetriableError(
 			"Endpoint not configured from HTTP Request node."
 		);
 	}
 
 	if (!data.variableName) {
-		// TODO: Publish "error" state for http request
+		await publish(
+			httpRequestChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
 		throw new NonRetriableError(
 			"Variable name not configured from HTTP Request node."
 		);
 	}
 
-	const result = await step.run("http-request", async () => {
-		const method = data.method;
+	try {
+		const result = await step.run("http-request", async () => {
+			const method = data.method;
 
-		// Parse previous workflow data for syntax templating
-		let endpoint: string;
-		try {
-			const template = Handlebars.compile(data.endpoint);
-			endpoint = template(context);
-
-			if (!endpoint || typeof endpoint !== "string") {
-				throw new Error(
-					"Endpoint template must resolve to a non-empty string."
-				);
-			}
-		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : String(error);
-			throw new NonRetriableError(
-				`Failed to resolve endpoint template from HTTP Request node: ${errorMessage}`
-			);
-		}
-
-		const options: TKyOptions = { method };
-
-		if (["POST", "PUT", "PATCH"].includes(method)) {
-			let resolvedBody: string;
+			// Parse previous workflow data for syntax templating
+			let endpoint: string;
 			try {
-				const bodyTemplate = Handlebars.compile(data.body || "{}");
-				resolvedBody = bodyTemplate(context);
+				const template = Handlebars.compile(data.endpoint);
+				endpoint = template(context);
+
+				if (!endpoint || typeof endpoint !== "string") {
+					throw new Error(
+						"Endpoint template must resolve to a non-empty string."
+					);
+				}
 			} catch (error) {
 				const errorMessage =
 					error instanceof Error ? error.message : String(error);
 				throw new NonRetriableError(
-					`Failed to template request body from HTTP Request node: ${errorMessage}`
+					`Failed to resolve endpoint template from HTTP Request node: ${errorMessage}`
 				);
 			}
 
-			try {
-				JSON.parse(resolvedBody);
-			} catch (error) {
-				const errorMessage =
-					error instanceof Error ? error.message : String(error);
-				throw new NonRetriableError(
-					`Request body is not valid JSON after templating from HTTP Request node: ${errorMessage}`
-				);
+			const options: TKyOptions = { method };
+
+			if (["POST", "PUT", "PATCH"].includes(method)) {
+				let resolvedBody: string;
+				try {
+					const bodyTemplate = Handlebars.compile(data.body || "{}");
+					resolvedBody = bodyTemplate(context);
+				} catch (error) {
+					const errorMessage =
+						error instanceof Error ? error.message : String(error);
+					throw new NonRetriableError(
+						`Failed to template request body from HTTP Request node: ${errorMessage}`
+					);
+				}
+
+				try {
+					JSON.parse(resolvedBody);
+				} catch (error) {
+					const errorMessage =
+						error instanceof Error ? error.message : String(error);
+					throw new NonRetriableError(
+						`Request body is not valid JSON after templating from HTTP Request node: ${errorMessage}`
+					);
+				}
+
+				options.body = resolvedBody;
+				options.headers = {
+					"Content-Type": "application/json",
+				};
 			}
 
-			options.body = resolvedBody;
-			options.headers = {
-				"Content-Type": "application/json",
+			const response = await ky(endpoint, options);
+			const contentType = response.headers.get("content-type");
+
+			const responseData = contentType?.includes("application/json")
+				? await response.json()
+				: await response.text();
+
+			const responsePayload = {
+				httpResponse: {
+					status: response.status,
+					statusText: response.statusText,
+					data: responseData,
+				},
 			};
-		}
 
-		const response = await ky(endpoint, options);
-		const contentType = response.headers.get("content-type");
+			return {
+				...context,
+				[data.variableName]: responsePayload,
+			};
+		});
 
-		const responseData = contentType?.includes("application/json")
-			? await response.json()
-			: await response.text();
+		await publish(
+			httpRequestChannel().status({
+				nodeId,
+				status: "success",
+			})
+		);
 
-		const responsePayload = {
-			httpResponse: {
-				status: response.status,
-				statusText: response.statusText,
-				data: responseData,
-			},
-		};
+		return result;
+	} catch (error) {
+		await publish(
+			httpRequestChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
 
-		return {
-			...context,
-			[data.variableName]: responsePayload,
-		};
-	});
-
-	// TODO: Publish "success" state for http request
-
-	return result;
+		throw error;
+	}
 };
