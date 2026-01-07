@@ -36,48 +36,48 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 		})
 	);
 
-	// Runtime validation
-	if (!data.method) {
-		await publish(
-			httpRequestChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
-
-		throw new NonRetriableError(
-			"Method not configured from HTTP Request node."
-		);
-	}
-
-	if (!data.endpoint) {
-		await publish(
-			httpRequestChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
-
-		throw new NonRetriableError(
-			"Endpoint not configured from HTTP Request node."
-		);
-	}
-
-	if (!data.variableName) {
-		await publish(
-			httpRequestChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
-
-		throw new NonRetriableError(
-			"Variable name not configured from HTTP Request node."
-		);
-	}
-
 	try {
 		const result = await step.run("http-request", async () => {
+			// Runtime validation
+			if (!data.method) {
+				await publish(
+					httpRequestChannel().status({
+						nodeId,
+						status: "error",
+					})
+				);
+
+				throw new NonRetriableError(
+					"Method not configured from HTTP Request node."
+				);
+			}
+
+			if (!data.endpoint) {
+				await publish(
+					httpRequestChannel().status({
+						nodeId,
+						status: "error",
+					})
+				);
+
+				throw new NonRetriableError(
+					"Endpoint not configured from HTTP Request node."
+				);
+			}
+
+			if (!data.variableName) {
+				await publish(
+					httpRequestChannel().status({
+						nodeId,
+						status: "error",
+					})
+				);
+
+				throw new NonRetriableError(
+					"Variable name not configured from HTTP Request node."
+				);
+			}
+
 			const method = data.method;
 
 			// Parse previous workflow data for syntax templating
@@ -86,7 +86,7 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 				const template = Handlebars.compile(data.endpoint);
 				endpoint = template(context);
 
-				if (!endpoint || typeof endpoint !== "string") {
+				if (!endpoint) {
 					throw new Error(
 						"Endpoint template must resolve to a non-empty string."
 					);
