@@ -1,7 +1,9 @@
-import { sendWorkflowExecution } from "@/lib/utils/inngest";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 
-export async function POST(request: NextRequest, response: NextResponse) {
+import { NextResponse } from "next/server";
+import { sendWorkflowExecution } from "@/lib/utils/inngest";
+
+export async function POST(request: NextRequest) {
 	try {
 		const url = new URL(request.url);
 		const workflowId = url.searchParams.get("workflowId");
@@ -35,6 +37,8 @@ export async function POST(request: NextRequest, response: NextResponse) {
 				googleForm: formData,
 			},
 		});
+
+		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (error) {
 		console.error("Google form webhook error: ", error);
 		return NextResponse.json(
