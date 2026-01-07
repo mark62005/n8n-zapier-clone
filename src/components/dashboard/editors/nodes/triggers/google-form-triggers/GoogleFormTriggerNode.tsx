@@ -21,8 +21,6 @@ function GoogleFormTriggerNode(props: TNodeProps) {
 		refreshToken: fetchGoogleFormTriggerRealtimeToken,
 	});
 
-	console.log(nodeStatus);
-
 	function handleOpenSettings() {
 		setDialogOpen(true);
 	}
