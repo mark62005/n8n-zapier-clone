@@ -1,6 +1,6 @@
 "use client";
 
-import type { INodeDialogProps } from "@/types/app/components/component-props/dashboard/editors/nodes/http-request/INodeDialogProps";
+import type { INodeDialogProps } from "@/types/app/components/component-props/dashboard/editors/nodes/INodeDialogProps";
 
 import { useParams } from "next/navigation";
 import { toast } from "sonner";

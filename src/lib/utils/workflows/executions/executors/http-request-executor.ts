@@ -8,7 +8,7 @@ import { type IHttpRequestNodeData } from "@/types/app/workflows/nodes/IHttpRequ
 import ky from "ky";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
-import { httpRequestChannel } from "@/inngest/channels/http-request";
+import { httpRequestChannel } from "@/inngest/channels";
 
 Handlebars.registerHelper("json", (context) => {
 	try {

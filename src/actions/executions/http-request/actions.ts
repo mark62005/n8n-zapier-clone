@@ -1,10 +1,10 @@
 "use server";
 
-import { type THttpRequestToken } from "@/types/app/actions/executions/http-request";
+import { type THttpRequestToken } from "@/types/app/actions/executions";
 
 import { getSubscriptionToken } from "@inngest/realtime";
 import { inngest } from "@/inngest/client";
-import { httpRequestChannel } from "@/inngest/channels/http-request";
+import { httpRequestChannel } from "@/inngest/channels";
 
 export async function fetchHttpRequestRealtimeToken(): Promise<THttpRequestToken> {
 	const token = await getSubscriptionToken(inngest, {

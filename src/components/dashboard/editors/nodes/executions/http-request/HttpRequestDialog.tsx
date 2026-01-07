@@ -1,7 +1,7 @@
 "use client";
 
-import type { IHttpRequestDialogProps } from "@/types/app/components/component-props/dashboard/editors/nodes/http-request/IHttpRequestDialogProp";
-import type { THttpRequestNodeSettingsFormValues } from "@/types/app/components/forms/nodes/http-request/THttpRequestNodeSettingsForm";
+import type { IHttpRequestDialogProps } from "@/types/app/components/component-props/dashboard/editors/nodes/http-request";
+import type { THttpRequestNodeSettingsFormValues } from "@/types/app/components/forms/nodes/http-request";
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";

@@ -1,4 +1,4 @@
-export * from "./http-request";
+export * from "./http-request-channel";
 
 export * from "./manual-trigger";
 export * from "./google-form-trigger";
