@@ -19,12 +19,20 @@ import { INodeTypeOption } from "@/types/app/components/dashboard/editor/nodes/I
 import { INodeSelectorProps } from "@/types/app/components/component-props/dashboard/editors/nodes/INodeSelectorProps";
 
 const triggerNodes: INodeTypeOption[] = [
+	// MANUAL TRIGGER
 	{
 		type: TNodeType.MANUAL_TRIGGER,
 		label: "Trigger manually",
 		description:
 			"Runs the flow on clicking a button. Good for getting started quickly.",
 		icon: MousePointerIcon,
+	},
+	// GOOGLE FORM TRIGGER
+	{
+		type: TNodeType.GOOGLE_FORM_TRIGGER,
+		label: "Google Form",
+		description: "Runs the flow when a Google Form is submitted.",
+		icon: "/logos/googleform.svg",
 	},
 ];
 
