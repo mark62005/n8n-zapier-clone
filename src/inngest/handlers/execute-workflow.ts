@@ -3,7 +3,7 @@ import { inngest } from "../client";
 import prisma from "@/lib/db/db";
 import { topologicalSort } from "@/lib/utils/inngest/topological-sort";
 import { getExecutor } from "@/lib/utils/workflows/executions/executor-registry";
-import { httpRequestChannel } from "../channels/http-request";
+import { httpRequestChannel } from "@/inngest/channels";
 import { manualTriggerChannel } from "../channels/manual-trigger";
 import { googleFormTriggerChannel } from "../channels/google-form-trigger";
 import { stripeTriggerChannel } from "../channels";

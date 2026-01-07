@@ -1,7 +1,7 @@
 import type { NodeTypes as TNodeTypes } from "@xyflow/react";
 import { NodeType } from "@/generated/prisma/enums";
 import InitialNode from "@/components/dashboard/editors/nodes/InitialNode";
-import HttpRequestNode from "@/components/dashboard/editors/nodes/executions/HttpRequestNode";
+import HttpRequestNode from "@/components/dashboard/editors/nodes/executions/http-request/HttpRequestNode";
 import ManualTriggerNode from "@/components/dashboard/editors/nodes/triggers/manual-triggers/ManualTriggerNode";
 import GoogleFormTriggerNode from "@/components/dashboard/editors/nodes/triggers/google-form-triggers/GoogleFormTriggerNode";
 import StripeTriggerNode from "@/components/dashboard/editors/nodes/triggers/stripe-triggers/StripeTriggerNode";
