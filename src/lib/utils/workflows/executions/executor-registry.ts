@@ -6,6 +6,7 @@ import { NodeType } from "@/generated/prisma/enums";
 import { manualTriggerExecutor } from "./executors/manual-trigger-executor";
 import { httpRequestExecutor } from "./executors/http-request-executor";
 import { googleFormTriggerExecutor } from "./executors";
+import { stripeTriggerExecutor } from "./executors/stripe-trigger-executor";
 
 export type TExecutorRegistry = Record<TNodeType, TNodeExecutor>;
 
@@ -14,6 +15,7 @@ export const executorRegistry: TExecutorRegistry = {
 	[NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
 	[NodeType.HTTP_REQUEST]: httpRequestExecutor,
 	[NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
+	[NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
 };
 
 export function getExecutor(type: TNodeType): TNodeExecutor {
