@@ -13,7 +13,8 @@
 		"prisma:migrate": "prisma migrate dev",
 		"prisma:generate": "prisma generate",
 		"inngest:dev": "inngest-cli dev",
-		"dev:all": "mprocs"
+		"dev:all": "mprocs",
+		"ngrok:dev": "dotenv -- ngrok http --url=$NGROK_URL 3000"
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "^2.0.53",
@@ -80,6 +81,7 @@
 		"@types/react-dom": "^19",
 		"@types/toposort": "^2.0.7",
 		"dotenv": "^17.2.3",
+		"dotenv-cli": "^11.0.0",
 		"eslint": "^9",
 		"eslint-config-next": "16.0.7",
 		"inngest-cli": "^1.14.3",

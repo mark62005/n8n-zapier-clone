@@ -9,7 +9,7 @@ import { useNodeStatus } from "@/hooks/workflows/nodes/use-node-status";
 import { fetchManualTriggerRealtimeToken } from "@/actions/executions/manual-trigger/actions";
 
 import { MousePointerIcon } from "lucide-react";
-import BaseTriggerNode from "./BaseTriggerNode";
+import BaseTriggerNode from "../BaseTriggerNode";
 import ManualTriggerDialog from "./ManualTriggerDialog";
 
 function ManualTriggerNode(props: TNodeProps) {
