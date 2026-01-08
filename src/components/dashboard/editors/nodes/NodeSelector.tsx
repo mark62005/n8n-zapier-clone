@@ -59,6 +59,13 @@ const executionNodes: INodeTypeOption[] = [
 		description: "Uses Google Gemini to generate text",
 		icon: "/logos/gemini.svg",
 	},
+	/* OPEN AI */
+	{
+		type: TNodeType.OPENAI,
+		label: "OpenAI",
+		description: "Uses OpenAI to generate text",
+		icon: "/logos/openai.svg",
+	},
 ];
 
 function NodeSelector({ open, onOpenChange, children }: INodeSelectorProps) {

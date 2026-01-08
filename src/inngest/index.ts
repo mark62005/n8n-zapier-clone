@@ -1,3 +1,3 @@
-import { executeWorkflow } from "./handlers/execute-workflow";
+import { executeWorkflow } from "./handlers";
 
 export const inngestFunctions = [executeWorkflow];

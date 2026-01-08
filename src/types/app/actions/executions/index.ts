@@ -2,6 +2,7 @@ export * from "./THttpRequestToken";
 
 /* AI NODES */
 export * from "./TGeminiToken";
+export * from "./TOpenAiToken";
 
 /* TRIGGERS */
 export * from "./google-form-trigger";
