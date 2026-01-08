@@ -4,11 +4,14 @@ import prisma from "@/lib/db/db";
 import { topologicalSort } from "@/lib/utils/inngest/topological-sort";
 import { getExecutor } from "@/lib/utils/workflows/executions/executor-registry";
 
-import { httpRequestChannel } from "@/inngest/channels";
-import { geminiChannel } from "../channels";
+import {
+	httpRequestChannel,
+	geminiChannel,
+	openAiChannel,
+	stripeTriggerChannel,
+} from "@/inngest/channels";
 import { manualTriggerChannel } from "../channels/manual-trigger";
 import { googleFormTriggerChannel } from "../channels/google-form-trigger";
-import { stripeTriggerChannel } from "../channels";
 
 export const executeWorkflow = inngest.createFunction(
 	{
@@ -19,7 +22,10 @@ export const executeWorkflow = inngest.createFunction(
 		event: "workflows/execute.workflow",
 		channels: [
 			httpRequestChannel(),
+			/* AI NODES */
 			geminiChannel(),
+			openAiChannel(),
+			/* TRIGGER NODES */
 			manualTriggerChannel(),
 			googleFormTriggerChannel(),
 			stripeTriggerChannel(),
