@@ -44,11 +44,20 @@ const triggerNodes: INodeTypeOption[] = [
 ];
 
 const executionNodes: INodeTypeOption[] = [
+	/* HTTP REQUEST */
 	{
 		type: TNodeType.HTTP_REQUEST,
 		label: "HTTP Request",
 		description: "Makes an HTTP request",
 		icon: GlobeIcon,
+	},
+	/** AI NODES **/
+	/* GEMINI */
+	{
+		type: TNodeType.GEMINI,
+		label: "Gemini",
+		description: "Uses Google Gemini to generate text",
+		icon: "/logos/gemini.svg",
 	},
 ];
 

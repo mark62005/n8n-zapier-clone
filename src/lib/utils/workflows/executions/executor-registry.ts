@@ -5,15 +5,20 @@ import { NodeType } from "@/generated/prisma/enums";
 
 import { manualTriggerExecutor } from "./executors/manual-trigger-executor";
 import { httpRequestExecutor } from "./executors/http-request-executor";
-import { googleFormTriggerExecutor } from "./executors";
+import { geminiExecutor, googleFormTriggerExecutor } from "./executors";
 import { stripeTriggerExecutor } from "./executors/stripe-trigger-executor";
 
 export type TExecutorRegistry = Record<TNodeType, TNodeExecutor>;
 
 export const executorRegistry: TExecutorRegistry = {
 	[NodeType.INITIAL]: manualTriggerExecutor, // TODO: Create initialExecutor
-	[NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
 	[NodeType.HTTP_REQUEST]: httpRequestExecutor,
+	/* AI NODES */
+	[NodeType.GEMINI]: geminiExecutor,
+	[NodeType.OPENAI]: geminiExecutor, // TODO: Create openAiExecutor
+	[NodeType.ANTHROPIC]: geminiExecutor, // TODO: Create anthropicAiExecutor
+	/* TRIGGERS */
+	[NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
 	[NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
 	[NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
 };
