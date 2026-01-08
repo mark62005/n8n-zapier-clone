@@ -7,6 +7,7 @@ import { httpRequestExecutor } from "./executors/http-request-executor";
 import {
 	geminiExecutor,
 	openAiExecutor,
+	anthropicExecutor,
 	googleFormTriggerExecutor,
 } from "./executors";
 import { manualTriggerExecutor } from "./executors/manual-trigger-executor";
@@ -20,7 +21,7 @@ export const executorRegistry: TExecutorRegistry = {
 	/* AI NODES */
 	[NodeType.GEMINI]: geminiExecutor,
 	[NodeType.OPENAI]: openAiExecutor,
-	[NodeType.ANTHROPIC]: geminiExecutor, // TODO: Create anthropicAiExecutor
+	[NodeType.ANTHROPIC]: anthropicExecutor,
 	/* TRIGGERS */
 	[NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
 	[NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
