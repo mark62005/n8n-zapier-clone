@@ -8,6 +8,7 @@ import {
 	httpRequestChannel,
 	geminiChannel,
 	openAiChannel,
+	anthropicChannel,
 	stripeTriggerChannel,
 } from "@/inngest/channels";
 import { manualTriggerChannel } from "../channels/manual-trigger";
@@ -25,6 +26,7 @@ export const executeWorkflow = inngest.createFunction(
 			/* AI NODES */
 			geminiChannel(),
 			openAiChannel(),
+			anthropicChannel(),
 			/* TRIGGER NODES */
 			manualTriggerChannel(),
 			googleFormTriggerChannel(),

@@ -66,6 +66,13 @@ const executionNodes: INodeTypeOption[] = [
 		description: "Uses OpenAI to generate text",
 		icon: "/logos/openai.svg",
 	},
+	/* ANTHROPIC */
+	{
+		type: TNodeType.ANTHROPIC,
+		label: "Anthropic",
+		description: "Uses Anthropic to generate text",
+		icon: "/logos/anthropic.svg",
+	},
 ];
 
 function NodeSelector({ open, onOpenChange, children }: INodeSelectorProps) {
