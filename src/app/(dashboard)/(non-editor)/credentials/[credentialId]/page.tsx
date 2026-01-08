@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/utils/auth";
-import { ICredentialDetailsPageProps } from "@/types/app/page-props/dashboard/non-editor/CredentialDetailsPageProps";
+import { ICredentialDetailsPageProps } from "@/types/app/page-props/dashboard/non-editor/credentials";
 
 async function CredentialDetailsPage({ params }: ICredentialDetailsPageProps) {
 	await requireAuth();
