@@ -7,13 +7,12 @@ import {
 
 import { CredentialType } from "@/generated/prisma/enums";
 
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	useCreateCredential,
 	useUpdateCredential,
-	useSuspenseCredentialById,
 } from "@/hooks/use-credentials";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { credentialFormSchema } from "./CredentialFormSchema";
@@ -69,10 +68,9 @@ const CREDENTIAL_TYPE_OPTIONS_CONFIG: {
 
 function CredentialForm({ initialData }: ICredentialFormProps) {
 	const router = useRouter();
-	const params = useParams();
 	const createCredential = useCreateCredential();
 	const updateCredential = useUpdateCredential();
-	const { upgradeModal, handleError } = useUpgradeModal();
+	const { handleError } = useUpgradeModal();
 
 	const isEdit = !!initialData?.id;
 	const isFormSubmitButtonDisabled =
