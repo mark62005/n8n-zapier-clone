@@ -32,6 +32,8 @@ function CredentialItem({ data }: ICredentialItemProps) {
 		CREDENTIAL_LOGOS_CONFIG[credentialType] || "/logos/openai.svg";
 
 	function handleDeleteCredential() {
+		if (deleteCredential.isPending) return;
+
 		deleteCredential.mutate({
 			id,
 		});
