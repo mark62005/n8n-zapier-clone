@@ -2,14 +2,22 @@
 
 import { type ICredentialItemProps } from "@/types/app/components/component-props/dashboard/credentials/credential-list";
 
+import { CredentialType } from "@/generated/prisma/enums";
+
 import { formatDistanceToNow } from "date-fns";
 import { useDeleteCredential } from "@/hooks/use-credentials";
 
-import { WorkflowIcon } from "lucide-react";
+import Image from "next/image";
 import EntityItem from "../../entities/EntityItem";
 
+const CREDENTIAL_LOGOS_CONFIG: Record<CredentialType, string> = {
+	[CredentialType.GEMINI]: "/logos/gemini.svg",
+	[CredentialType.OPENAI]: "/logos/openai.svg",
+	[CredentialType.ANTHROPIC]: "/logos/anthropic.svg",
+};
+
 function CredentialItem({ data }: ICredentialItemProps) {
-	const { id, name } = data;
+	const { id, name, credentialType } = data;
 
 	const deleteCredential = useDeleteCredential();
 
@@ -19,6 +27,9 @@ function CredentialItem({ data }: ICredentialItemProps) {
 	const createdTimeAgo = formatDistanceToNow(data.createdAt, {
 		addSuffix: true,
 	});
+
+	const logoSrc =
+		CREDENTIAL_LOGOS_CONFIG[credentialType] || "/logos/openai.svg";
 
 	function handleDeleteCredential() {
 		deleteCredential.mutate({
@@ -36,9 +47,13 @@ function CredentialItem({ data }: ICredentialItemProps) {
 				</>
 			}
 			image={
-				// TODO: Dynamically render different icons
 				<div className="size-8 flex items-center justify-center">
-					<WorkflowIcon className="size-5 text-muted-foreground" />
+					<Image
+						src={logoSrc}
+						alt={`Logo of ${credentialType}`}
+						width={20}
+						height={20}
+					/>
 				</div>
 			}
 			onRemove={handleDeleteCredential}
