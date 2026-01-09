@@ -8,6 +8,7 @@ import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import prisma from "@/lib/db/db";
 import { geminiChannel } from "@/inngest/channels";
 
 Handlebars.registerHelper("json", (context) => {
@@ -36,7 +37,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 		})
 	);
 
-	// Runtime validation
+	// Runtime validations
 	if (!data.variableName) {
 		await publish(
 			geminiChannel().status({
@@ -49,6 +50,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 			"Variable name not configured from Gemini node."
 		);
 	}
+
 	if (!data.userPrompt) {
 		await publish(
 			geminiChannel().status({
@@ -60,8 +62,18 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 		throw new NonRetriableError("User prompt not configured from Gemini node.");
 	}
 
-	// TODO: Throw error if credentials is missing
+	if (!data.credentialId) {
+		await publish(
+			geminiChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
 
+		throw new NonRetriableError("Credential ID is missing from Gemini node.");
+	}
+
+	// Syntax templating
 	const systemPrompt = data.systemPrompt
 		? Handlebars.compile(data.systemPrompt)(context)
 		: "You are a helpful assistant.";
@@ -91,11 +103,28 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 		);
 	}
 
-	// TODO: Fetch credentials that user selected
-	const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+	// Fetch credential
+	const credential = await step.run("fetch-credential", async () => {
+		return await prisma.credential.findUnique({
+			where: {
+				id: data.credentialId,
+			},
+		});
+	});
+
+	if (!credential) {
+		await publish(
+			geminiChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
+		throw new NonRetriableError("Gemini node: Credential not found.");
+	}
 
 	const geminiAi = createGoogleGenerativeAI({
-		apiKey: credentialValue,
+		apiKey: credential.value,
 	});
 
 	try {
