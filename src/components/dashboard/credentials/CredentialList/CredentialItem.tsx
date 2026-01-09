@@ -17,7 +17,7 @@ const CREDENTIAL_LOGOS_CONFIG: Record<CredentialType, string> = {
 };
 
 function CredentialItem({ data }: ICredentialItemProps) {
-	const { id, name, credentialType } = data;
+	const { id, name, type } = data;
 
 	const deleteCredential = useDeleteCredential();
 
@@ -28,8 +28,7 @@ function CredentialItem({ data }: ICredentialItemProps) {
 		addSuffix: true,
 	});
 
-	const logoSrc =
-		CREDENTIAL_LOGOS_CONFIG[credentialType] || "/logos/openai.svg";
+	const logoSrc = CREDENTIAL_LOGOS_CONFIG[type] || "/logos/openai.svg";
 
 	function handleDeleteCredential() {
 		if (deleteCredential.isPending) return;
@@ -52,7 +51,7 @@ function CredentialItem({ data }: ICredentialItemProps) {
 				<div className="size-8 flex items-center justify-center">
 					<Image
 						src={logoSrc}
-						alt={`Logo of ${credentialType}`}
+						alt={`Logo of ${type}`}
 						width={20}
 						height={20}
 					/>

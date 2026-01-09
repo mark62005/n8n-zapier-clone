@@ -81,7 +81,7 @@ export const credentialsRouter = createTRPCRouter({
 		.query(async ({ ctx, input }) => {
 			return await prisma.credential.findMany({
 				where: {
-					credentialType: input.type,
+					type: input.type,
 					userId: ctx.authSession.user.id,
 				},
 				orderBy: {
@@ -105,7 +105,7 @@ export const credentialsRouter = createTRPCRouter({
 				data: {
 					name,
 					userId: ctx.authSession.user.id,
-					credentialType: type,
+					type,
 					value, // TODO: Encrypt value in production
 				},
 			});
@@ -127,7 +127,7 @@ export const credentialsRouter = createTRPCRouter({
 				where: { id, userId: ctx.authSession.user.id },
 				data: {
 					name,
-					credentialType: type,
+					type,
 					value, // TODO: Encrypt value in production
 				},
 			});
