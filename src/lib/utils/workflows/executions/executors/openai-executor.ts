@@ -8,6 +8,7 @@ import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
+import prisma from "@/lib/db/db";
 import { openAiChannel } from "@/inngest/channels";
 
 Handlebars.registerHelper("json", (context) => {
@@ -36,7 +37,7 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 		})
 	);
 
-	// Runtime validation
+	// Runtime validations
 	if (!data.variableName) {
 		await publish(
 			openAiChannel().status({
@@ -49,6 +50,7 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 			"Variable name not configured from OpenAI node."
 		);
 	}
+
 	if (!data.userPrompt) {
 		await publish(
 			openAiChannel().status({
@@ -60,8 +62,18 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 		throw new NonRetriableError("User prompt not configured from OpenAI node.");
 	}
 
-	// TODO: Throw error if credentials is missing
+	if (!data.credentialId) {
+		await publish(
+			openAiChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
 
+		throw new NonRetriableError("Credential ID is missing from OpenAI node.");
+	}
+
+	// Syntax templating
 	const systemPrompt = data.systemPrompt
 		? Handlebars.compile(data.systemPrompt)(context)
 		: "You are a helpful assistant.";
@@ -91,11 +103,28 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 		);
 	}
 
-	// TODO: Fetch credentials that user selected
-	const credentialValue = process.env.OPENAI_API_KEY;
+	// Fetch credential
+	const credential = await step.run("fetch-credential", async () => {
+		return await prisma.credential.findUnique({
+			where: {
+				id: data.credentialId,
+			},
+		});
+	});
+
+	if (!credential) {
+		await publish(
+			openAiChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
+		throw new NonRetriableError("OpenAI node: Credential not found.");
+	}
 
 	const openAi = createOpenAI({
-		apiKey: credentialValue,
+		apiKey: credential.value,
 	});
 
 	try {
