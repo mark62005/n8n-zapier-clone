@@ -84,12 +84,12 @@ model Verification {
 
 // Credential model for using AI agents
 model Credential {
-  id             String         @id @default(cuid())
-  name           String
-  value          String
-  credentialType CredentialType
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id        String         @id @default(cuid())
+  name      String
+  value     String
+  type      CredentialType
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
