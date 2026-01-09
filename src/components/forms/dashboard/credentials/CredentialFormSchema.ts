@@ -1,4 +1,4 @@
-import { z } from "zod";
+import z from "zod";
 import { CredentialType } from "@/generated/prisma/enums";
 
 export const credentialFormSchema = z.object({
