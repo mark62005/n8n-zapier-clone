@@ -8,6 +8,7 @@ import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import prisma from "@/lib/db/db";
 import { anthropicChannel } from "@/inngest/channels";
 
 Handlebars.registerHelper("json", (context) => {
@@ -36,7 +37,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		})
 	);
 
-	// Runtime validation
+	// Runtime validations
 	if (!data.variableName) {
 		await publish(
 			anthropicChannel().status({
@@ -49,6 +50,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 			"Variable name not configured from Anthropic node."
 		);
 	}
+
 	if (!data.userPrompt) {
 		await publish(
 			anthropicChannel().status({
@@ -62,8 +64,20 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		);
 	}
 
-	// TODO: Throw error if credentials is missing
+	if (!data.credentialId) {
+		await publish(
+			anthropicChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
 
+		throw new NonRetriableError(
+			"Credential ID is missing from Anthropic node."
+		);
+	}
+
+	// Syntax templating
 	const systemPrompt = data.systemPrompt
 		? Handlebars.compile(data.systemPrompt)(context)
 		: "You are a helpful assistant.";
@@ -93,11 +107,28 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		);
 	}
 
-	// TODO: Fetch credentials that user selected
-	const credentialValue = process.env.ANTHROPIC_API_KEY;
+	// Fetch credential
+	const credential = await step.run("fetch-credential", async () => {
+		return await prisma.credential.findUnique({
+			where: {
+				id: data.credentialId,
+			},
+		});
+	});
+
+	if (!credential) {
+		await publish(
+			anthropicChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
+		throw new NonRetriableError("Anthropic node: Credential not found.");
+	}
 
 	const anthropic = createAnthropic({
-		apiKey: credentialValue,
+		apiKey: credential.value,
 	});
 
 	try {
