@@ -19,6 +19,7 @@ import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-
 export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 	data,
 	nodeId,
+	userId,
 	context,
 	step,
 	publish,
@@ -89,6 +90,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		credential = await step.run(STEP_GET_REQUIRED_CREDENTIAL, async () => {
 			return await getRequiredCredential(
 				data.credentialId ?? "",
+				userId,
 				CredentialType.ANTHROPIC
 			);
 		});

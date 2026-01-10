@@ -19,6 +19,7 @@ import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-
 export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 	data,
 	nodeId,
+	userId,
 	context,
 	step,
 	publish,
@@ -89,6 +90,7 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 		credential = await step.run(STEP_GET_REQUIRED_CREDENTIAL, async () => {
 			return await getRequiredCredential(
 				data.credentialId ?? "",
+				userId,
 				CredentialType.OPENAI
 			);
 		});
