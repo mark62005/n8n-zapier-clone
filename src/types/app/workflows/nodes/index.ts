@@ -6,3 +6,6 @@ export * from "./IHttpRequestNodeData";
 export * from "./IGeminiNodeData";
 export * from "./IOpenAiNodeData";
 export * from "./IAnthropicNodeData";
+
+/* MESSAGER NODES */
+export * from "./IDiscordNodeData";

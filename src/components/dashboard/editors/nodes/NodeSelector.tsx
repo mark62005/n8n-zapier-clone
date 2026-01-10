@@ -73,6 +73,14 @@ const executionNodes: INodeTypeOption[] = [
 		description: "Uses Anthropic to generate text",
 		icon: "/logos/anthropic.svg",
 	},
+	/* MESSAGER NODES */
+	/* DISCORD */
+	{
+		type: TNodeType.DISCORD,
+		label: "Discord",
+		description: "Send a message to Discord",
+		icon: "/logos/discord.svg",
+	},
 ];
 
 function NodeSelector({ open, onOpenChange, children }: INodeSelectorProps) {

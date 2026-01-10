@@ -1,5 +1,7 @@
 export * from "./http-request-channel";
 
+export * from "./discord-channel";
+
 /* AI NODES */
 export * from "./gemini-channel";
 export * from "./openai-channel";

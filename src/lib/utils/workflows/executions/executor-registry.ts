@@ -9,6 +9,7 @@ import {
 	openAiExecutor,
 	anthropicExecutor,
 	googleFormTriggerExecutor,
+	discordExecutor,
 } from "./executors";
 import { manualTriggerExecutor } from "./executors/manual-trigger-executor";
 import { stripeTriggerExecutor } from "./executors/stripe-trigger-executor";
@@ -18,10 +19,15 @@ export type TExecutorRegistry = Record<TNodeType, TNodeExecutor>;
 export const executorRegistry: TExecutorRegistry = {
 	[NodeType.INITIAL]: manualTriggerExecutor, // TODO: Create initialExecutor
 	[NodeType.HTTP_REQUEST]: httpRequestExecutor,
+
 	/* AI NODES */
 	[NodeType.GEMINI]: geminiExecutor,
 	[NodeType.OPENAI]: openAiExecutor,
 	[NodeType.ANTHROPIC]: anthropicExecutor,
+	/* MESSAGER NODES */
+	[NodeType.DISCORD]: discordExecutor,
+	[NodeType.SLACK]: geminiExecutor, // TODO: Create slackExecutor
+
 	/* TRIGGERS */
 	[NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
 	[NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
