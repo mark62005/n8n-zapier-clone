@@ -4,12 +4,16 @@ import {
 } from "@/types/app/workflows/executions/executors";
 import { type IGeminiNodeData } from "@/types/app/workflows/nodes";
 
+import { CredentialType } from "@/generated/prisma/enums";
+import { STEP_GET_REQUIRED_CREDENTIAL } from "@/inngest/constants/steps";
+
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import prisma from "@/lib/db/db";
 import { geminiChannel } from "@/inngest/channels";
+import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
+import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
 
 Handlebars.registerHelper("json", (context) => {
 	try {
@@ -37,6 +41,8 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 		})
 	);
 
+	const nodeName = getCredentialTypeNameOrThrow(CredentialType.GEMINI);
+
 	// Runtime validations
 	if (!data.variableName) {
 		await publish(
@@ -47,7 +53,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 		);
 
 		throw new NonRetriableError(
-			"Variable name not configured from Gemini node."
+			`Variable name not configured from ${nodeName} node.`
 		);
 	}
 
@@ -59,7 +65,9 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 			})
 		);
 
-		throw new NonRetriableError("User prompt not configured from Gemini node.");
+		throw new NonRetriableError(
+			`User prompt not configured from ${nodeName} node.`
+		);
 	}
 
 	if (!data.credentialId) {
@@ -70,7 +78,9 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 			})
 		);
 
-		throw new NonRetriableError("Credential ID is missing from Gemini node.");
+		throw new NonRetriableError(
+			`Credential ID is missing from ${nodeName} node.`
+		);
 	}
 
 	// Syntax templating
@@ -99,20 +109,20 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		throw new NonRetriableError(
-			`Failed to resolve user prompt template from Gemini node: ${errorMessage}`
+			`Failed to resolve user prompt template from ${nodeName} node: ${errorMessage}`
 		);
 	}
 
 	// Fetch credential
-	const credential = await step.run("fetch-credential", async () => {
-		return await prisma.credential.findUnique({
-			where: {
-				id: data.credentialId,
-			},
+	let credential;
+	try {
+		credential = await step.run(STEP_GET_REQUIRED_CREDENTIAL, async () => {
+			return await getRequiredCredential(
+				data.credentialId ?? "",
+				CredentialType.GEMINI
+			);
 		});
-	});
-
-	if (!credential) {
+	} catch (error) {
 		await publish(
 			geminiChannel().status({
 				nodeId,
@@ -120,7 +130,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 			})
 		);
 
-		throw new NonRetriableError("Gemini node: Credential not found.");
+		throw error;
 	}
 
 	const geminiAi = createGoogleGenerativeAI({
