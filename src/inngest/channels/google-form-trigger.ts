@@ -1,3 +1,5 @@
+import { type TExecutableNodeStatus } from "@/types/app/workflows/nodes";
+
 import { channel, topic } from "@inngest/realtime";
 
 export const GOOGLE_FORM_TRIGGER_CHANNEL_NAME = "google-form-trigger-execution";
@@ -7,6 +9,6 @@ export const googleFormTriggerChannel = channel(
 ).addTopic(
 	topic("status").type<{
 		nodeId: string;
-		status: "loading" | "success" | "error";
+		status: TExecutableNodeStatus;
 	}>()
 );

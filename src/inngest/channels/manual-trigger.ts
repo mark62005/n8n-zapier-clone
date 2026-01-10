@@ -1,3 +1,5 @@
+import { type TExecutableNodeStatus } from "@/types/app/workflows/nodes";
+
 import { channel, topic } from "@inngest/realtime";
 
 export const MANUAL_TRIGGER_CHANNEL_NAME = "manual-trigger-execution";
@@ -7,6 +9,6 @@ export const manualTriggerChannel = channel(
 ).addTopic(
 	topic("status").type<{
 		nodeId: string;
-		status: "loading" | "success" | "error";
+		status: TExecutableNodeStatus;
 	}>()
 );
