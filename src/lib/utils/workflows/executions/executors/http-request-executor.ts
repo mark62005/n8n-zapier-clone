@@ -11,18 +11,6 @@ import { NonRetriableError } from "inngest";
 import { httpRequestChannel } from "@/inngest/channels";
 import { createNodeStatusPublisher } from "@/inngest/utils";
 
-Handlebars.registerHelper("json", (context) => {
-	try {
-		const jsonString = JSON.stringify(context, null, 2);
-		const safeString = new Handlebars.SafeString(jsonString);
-
-		return safeString;
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		throw new Error(`Failed to serialize context to JSON: ${errorMessage}`);
-	}
-});
-
 export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 	data,
 	nodeId,

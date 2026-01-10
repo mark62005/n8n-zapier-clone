@@ -16,18 +16,6 @@ import { createNodeStatusPublisher } from "@/inngest/utils";
 import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
 import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
 
-Handlebars.registerHelper("json", (context) => {
-	try {
-		const jsonString = JSON.stringify(context, null, 2);
-		const safeString = new Handlebars.SafeString(jsonString);
-
-		return safeString;
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		throw new Error(`Failed to serialize context to JSON: ${errorMessage}`);
-	}
-});
-
 export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 	data,
 	nodeId,
