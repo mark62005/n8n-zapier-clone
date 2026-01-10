@@ -9,6 +9,7 @@ import { getCredentialTypeNameOrThrow } from "./type-name-registry";
 
 export async function getRequiredCredential(
 	credentialId: string,
+	userId: string,
 	type: CredentialType
 ): Promise<TCredential> {
 	const nodeName = getCredentialTypeNameOrThrow(type);
@@ -18,7 +19,7 @@ export async function getRequiredCredential(
 	}
 
 	const credential = await prisma.credential.findUnique({
-		where: { id: credentialId },
+		where: { id: credentialId, userId },
 	});
 
 	if (!credential) {
