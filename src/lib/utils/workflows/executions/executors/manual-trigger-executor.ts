@@ -4,6 +4,7 @@ import {
 } from "@/types/app/workflows/executions/executors";
 
 import { manualTriggerChannel } from "@/inngest/channels/manual-trigger";
+import { createNodeStatusPublisher } from "@/inngest/utils";
 
 type TManualTriggerData = Record<string, unknown>;
 
@@ -13,21 +14,18 @@ export const manualTriggerExecutor: TNodeExecutor<TManualTriggerData> = async ({
 	step,
 	publish,
 }: INodeExecutorParams<TManualTriggerData>) => {
-	await publish(
-		manualTriggerChannel().status({
+	const publishStatus = createNodeStatusPublisher(publish, (status) => {
+		return manualTriggerChannel().status({
 			nodeId,
-			status: "loading",
-		})
-	);
+			status,
+		});
+	});
+
+	await publishStatus("loading");
 
 	const result = await step.run("manual-trigger", async () => context);
 
-	await publish(
-		manualTriggerChannel().status({
-			nodeId,
-			status: "success",
-		})
-	);
+	await publishStatus("success");
 
 	return result;
 };
