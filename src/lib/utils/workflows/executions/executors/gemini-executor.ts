@@ -12,6 +12,7 @@ import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { geminiChannel } from "@/inngest/channels";
+import { createNodeStatusPublisher } from "@/inngest/utils";
 import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
 import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
 
@@ -34,23 +35,17 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 	step,
 	publish,
 }: INodeExecutorParams<IGeminiNodeData>) => {
-	await publish(
-		geminiChannel().status({
-			nodeId,
-			status: "loading",
-		})
-	);
+	const publishStatus = createNodeStatusPublisher(publish, (status) => {
+		return geminiChannel().status({ nodeId, status });
+	});
+
+	await publishStatus("loading");
 
 	const nodeName = getCredentialTypeNameOrThrow(CredentialType.GEMINI);
 
 	// Runtime validations
 	if (!data.variableName) {
-		await publish(
-			geminiChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw new NonRetriableError(
 			`Variable name not configured from ${nodeName} node.`
@@ -58,12 +53,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 	}
 
 	if (!data.userPrompt) {
-		await publish(
-			geminiChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw new NonRetriableError(
 			`User prompt not configured from ${nodeName} node.`
@@ -71,12 +61,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 	}
 
 	if (!data.credentialId) {
-		await publish(
-			geminiChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw new NonRetriableError(
 			`Credential ID is missing from ${nodeName} node.`
@@ -95,17 +80,14 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 		userPrompt = template(context);
 
 		if (!userPrompt) {
+			await publishStatus("error");
+
 			throw new Error(
 				"User prompt template must resolve to a non-empty string."
 			);
 		}
 	} catch (error) {
-		await publish(
-			geminiChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		throw new NonRetriableError(
@@ -123,12 +105,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 			);
 		});
 	} catch (error) {
-		await publish(
-			geminiChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw error;
 	}
@@ -152,12 +129,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 		const text =
 			steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
 
-		await publish(
-			geminiChannel().status({
-				nodeId,
-				status: "success",
-			})
-		);
+		await publishStatus("success");
 
 		return {
 			...context,
@@ -166,12 +138,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 			},
 		};
 	} catch (error) {
-		await publish(
-			geminiChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw error;
 	}

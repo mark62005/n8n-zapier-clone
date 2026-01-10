@@ -9,6 +9,7 @@ import ky from "ky";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { httpRequestChannel } from "@/inngest/channels";
+import { createNodeStatusPublisher } from "@/inngest/utils";
 
 Handlebars.registerHelper("json", (context) => {
 	try {
@@ -29,23 +30,20 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 	step,
 	publish,
 }: INodeExecutorParams<IHttpRequestNodeData>) => {
-	await publish(
-		httpRequestChannel().status({
+	const publishStatus = createNodeStatusPublisher(publish, (status) => {
+		return httpRequestChannel().status({
 			nodeId,
-			status: "loading",
-		})
-	);
+			status,
+		});
+	});
+
+	await publishStatus("loading");
 
 	try {
 		const result = await step.run("http-request", async () => {
 			// Runtime validation
 			if (!data.method) {
-				await publish(
-					httpRequestChannel().status({
-						nodeId,
-						status: "error",
-					})
-				);
+				await publishStatus("error");
 
 				throw new NonRetriableError(
 					"Method not configured from HTTP Request node."
@@ -53,12 +51,7 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 			}
 
 			if (!data.endpoint) {
-				await publish(
-					httpRequestChannel().status({
-						nodeId,
-						status: "error",
-					})
-				);
+				await publishStatus("error");
 
 				throw new NonRetriableError(
 					"Endpoint not configured from HTTP Request node."
@@ -66,12 +59,7 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 			}
 
 			if (!data.variableName) {
-				await publish(
-					httpRequestChannel().status({
-						nodeId,
-						status: "error",
-					})
-				);
+				await publishStatus("error");
 
 				throw new NonRetriableError(
 					"Variable name not configured from HTTP Request node."
@@ -87,11 +75,15 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 				endpoint = template(context);
 
 				if (!endpoint) {
+					await publishStatus("error");
+
 					throw new Error(
 						"Endpoint template must resolve to a non-empty string."
 					);
 				}
 			} catch (error) {
+				await publishStatus("loading");
+
 				const errorMessage =
 					error instanceof Error ? error.message : String(error);
 				throw new NonRetriableError(
@@ -107,6 +99,8 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 					const bodyTemplate = Handlebars.compile(data.body || "{}");
 					resolvedBody = bodyTemplate(context);
 				} catch (error) {
+					await publishStatus("loading");
+
 					const errorMessage =
 						error instanceof Error ? error.message : String(error);
 					throw new NonRetriableError(
@@ -117,6 +111,8 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 				try {
 					JSON.parse(resolvedBody);
 				} catch (error) {
+					await publishStatus("loading");
+
 					const errorMessage =
 						error instanceof Error ? error.message : String(error);
 					throw new NonRetriableError(
@@ -151,21 +147,11 @@ export const httpRequestExecutor: TNodeExecutor<IHttpRequestNodeData> = async ({
 			};
 		});
 
-		await publish(
-			httpRequestChannel().status({
-				nodeId,
-				status: "success",
-			})
-		);
+		await publishStatus("success");
 
 		return result;
 	} catch (error) {
-		await publish(
-			httpRequestChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw error;
 	}

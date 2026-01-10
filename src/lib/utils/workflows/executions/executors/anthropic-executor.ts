@@ -12,6 +12,7 @@ import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { anthropicChannel } from "@/inngest/channels";
+import { createNodeStatusPublisher } from "@/inngest/utils";
 import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
 import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
 
@@ -34,23 +35,17 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 	step,
 	publish,
 }: INodeExecutorParams<IAnthropicNodeData>) => {
-	await publish(
-		anthropicChannel().status({
-			nodeId,
-			status: "loading",
-		})
-	);
+	const publishStatus = createNodeStatusPublisher(publish, (status) => {
+		return anthropicChannel().status({ nodeId, status });
+	});
+
+	await publishStatus("loading");
 
 	const nodeName = getCredentialTypeNameOrThrow(CredentialType.ANTHROPIC);
 
 	// Runtime validations
 	if (!data.variableName) {
-		await publish(
-			anthropicChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw new NonRetriableError(
 			`Variable name not configured from ${nodeName} node.`
@@ -58,12 +53,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 	}
 
 	if (!data.userPrompt) {
-		await publish(
-			anthropicChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw new NonRetriableError(
 			`User prompt not configured from ${nodeName} node.`
@@ -71,12 +61,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 	}
 
 	if (!data.credentialId) {
-		await publish(
-			anthropicChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw new NonRetriableError(
 			`Credential ID is missing from ${nodeName} node.`
@@ -95,17 +80,14 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		userPrompt = template(context);
 
 		if (!userPrompt) {
+			await publishStatus("error");
+
 			throw new Error(
 				"User prompt template must resolve to a non-empty string."
 			);
 		}
 	} catch (error) {
-		await publish(
-			anthropicChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		throw new NonRetriableError(
@@ -123,12 +105,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 			);
 		});
 	} catch (error) {
-		await publish(
-			anthropicChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw error;
 	}
@@ -156,12 +133,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		const text =
 			steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
 
-		await publish(
-			anthropicChannel().status({
-				nodeId,
-				status: "success",
-			})
-		);
+		await publishStatus("success");
 
 		return {
 			...context,
@@ -170,12 +142,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 			},
 		};
 	} catch (error) {
-		await publish(
-			anthropicChannel().status({
-				nodeId,
-				status: "error",
-			})
-		);
+		await publishStatus("error");
 
 		throw error;
 	}

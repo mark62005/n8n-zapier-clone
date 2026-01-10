@@ -4,6 +4,7 @@ import {
 } from "@/types/app/workflows/executions/executors";
 
 import { stripeTriggerChannel } from "@/inngest/channels";
+import { createNodeStatusPublisher } from "@/inngest/utils";
 
 type TStripeTriggerData = Record<string, unknown>;
 
@@ -13,21 +14,18 @@ export const stripeTriggerExecutor: TNodeExecutor<TStripeTriggerData> = async ({
 	step,
 	publish,
 }: INodeExecutorParams<TStripeTriggerData>) => {
-	await publish(
-		stripeTriggerChannel().status({
+	const publishStatus = createNodeStatusPublisher(publish, (status) => {
+		return stripeTriggerChannel().status({
 			nodeId,
-			status: "loading",
-		})
-	);
+			status,
+		});
+	});
+
+	await publishStatus("loading");
 
 	const result = await step.run("stripe-trigger", async () => context);
 
-	await publish(
-		stripeTriggerChannel().status({
-			nodeId,
-			status: "success",
-		})
-	);
+	await publishStatus("success");
 
 	return result;
 };
