@@ -3,11 +3,15 @@
 import { type IAnthropicDialogProps } from "@/types/app/components/component-props/dashboard/editors/nodes/ai/anthropic";
 import { type TAnthropicNodeSettingsFormValues } from "@/types/app/components/forms/nodes/ai/anthropic";
 
+import { CredentialType } from "@/generated/prisma/enums";
+
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCredentialsByType } from "@/hooks/use-credentials";
 import { anthropicNodeSettingsFormSchema } from "@/components/forms/dashboard/AnthropicNodeSettingsForm";
 
+import Image from "next/image";
 import {
 	Dialog,
 	DialogContent,
@@ -25,6 +29,13 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -35,10 +46,14 @@ function AnthropicDialog({
 	defaultValues,
 	onSubmit,
 }: IAnthropicDialogProps) {
+	const { data: credentials, isLoading: isLoadingCredentials } =
+		useCredentialsByType(CredentialType.ANTHROPIC);
+
 	const form = useForm<TAnthropicNodeSettingsFormValues>({
 		resolver: zodResolver(anthropicNodeSettingsFormSchema),
 		defaultValues: {
 			variableName: defaultValues?.variableName || "",
+			credentialId: defaultValues?.credentialId || "",
 			systemPrompt: defaultValues?.systemPrompt || "",
 			userPrompt: defaultValues?.userPrompt || "",
 		},
@@ -49,6 +64,7 @@ function AnthropicDialog({
 		if (open) {
 			form.reset({
 				variableName: defaultValues?.variableName || "",
+				credentialId: defaultValues?.credentialId || "",
 				systemPrompt: defaultValues?.systemPrompt || "",
 				userPrompt: defaultValues?.userPrompt || "",
 			});
@@ -101,6 +117,61 @@ function AnthropicDialog({
 										Use this name to reference the result in other nodes:{" "}
 										{`{{${watchVariableName}.text}}`}
 									</FormDescription>
+
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						{/* CREDENTIAL ID */}
+						<FormField
+							control={form.control}
+							name="credentialId"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="credentialId">
+										Anthropic Credential(s)
+									</FormLabel>
+
+									<Select
+										onValueChange={field.onChange}
+										value={field.value}
+										disabled={isLoadingCredentials || !credentials?.length}
+										required
+									>
+										<FormControl>
+											<SelectTrigger
+												id="credentialId"
+												className="w-full"
+											>
+												<SelectValue placeholder="Select a Credential ID" />
+											</SelectTrigger>
+										</FormControl>
+
+										<SelectContent>
+											{credentials?.map((credential) => {
+												const { id, name } = credential;
+
+												return (
+													<SelectItem
+														key={id}
+														value={id}
+													>
+														<div className="flex items-center gap-2">
+															<Image
+																src="/logos/anthropic.svg"
+																alt={`Logo of Anthropic`}
+																width={16}
+																height={16}
+															/>
+
+															{name}
+														</div>
+													</SelectItem>
+												);
+											})}
+										</SelectContent>
+									</Select>
 
 									<FormMessage />
 								</FormItem>

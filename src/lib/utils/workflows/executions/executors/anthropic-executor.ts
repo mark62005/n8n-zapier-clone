@@ -4,11 +4,16 @@ import {
 } from "@/types/app/workflows/executions/executors";
 import { type IAnthropicNodeData } from "@/types/app/workflows/nodes";
 
+import { CredentialType } from "@/generated/prisma/enums";
+import { STEP_GET_REQUIRED_CREDENTIAL } from "@/inngest/constants/steps";
+
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { anthropicChannel } from "@/inngest/channels";
+import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
+import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
 
 Handlebars.registerHelper("json", (context) => {
 	try {
@@ -36,7 +41,9 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		})
 	);
 
-	// Runtime validation
+	const nodeName = getCredentialTypeNameOrThrow(CredentialType.ANTHROPIC);
+
+	// Runtime validations
 	if (!data.variableName) {
 		await publish(
 			anthropicChannel().status({
@@ -46,9 +53,10 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		);
 
 		throw new NonRetriableError(
-			"Variable name not configured from Anthropic node."
+			`Variable name not configured from ${nodeName} node.`
 		);
 	}
+
 	if (!data.userPrompt) {
 		await publish(
 			anthropicChannel().status({
@@ -58,12 +66,24 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 		);
 
 		throw new NonRetriableError(
-			"User prompt not configured from Anthropic node."
+			`User prompt not configured from ${nodeName} node.`
 		);
 	}
 
-	// TODO: Throw error if credentials is missing
+	if (!data.credentialId) {
+		await publish(
+			anthropicChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
 
+		throw new NonRetriableError(
+			`Credential ID is missing from ${nodeName} node.`
+		);
+	}
+
+	// Syntax templating
 	const systemPrompt = data.systemPrompt
 		? Handlebars.compile(data.systemPrompt)(context)
 		: "You are a helpful assistant.";
@@ -89,15 +109,32 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		throw new NonRetriableError(
-			`Failed to resolve user prompt template from Anthropic node: ${errorMessage}`
+			`Failed to resolve user prompt template from ${nodeName} node: ${errorMessage}`
 		);
 	}
 
-	// TODO: Fetch credentials that user selected
-	const credentialValue = process.env.ANTHROPIC_API_KEY;
+	// Fetch credential
+	let credential;
+	try {
+		credential = await step.run(STEP_GET_REQUIRED_CREDENTIAL, async () => {
+			return await getRequiredCredential(
+				data.credentialId ?? "",
+				CredentialType.ANTHROPIC
+			);
+		});
+	} catch (error) {
+		await publish(
+			anthropicChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
+		throw error;
+	}
 
 	const anthropic = createAnthropic({
-		apiKey: credentialValue,
+		apiKey: credential.value,
 	});
 
 	try {

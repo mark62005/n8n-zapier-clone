@@ -4,11 +4,16 @@ import {
 } from "@/types/app/workflows/executions/executors";
 import { type IOpenAiNodeData } from "@/types/app/workflows/nodes";
 
+import { CredentialType } from "@/generated/prisma/enums";
+import { STEP_GET_REQUIRED_CREDENTIAL } from "@/inngest/constants/steps";
+
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { openAiChannel } from "@/inngest/channels";
+import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
+import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
 
 Handlebars.registerHelper("json", (context) => {
 	try {
@@ -36,7 +41,9 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 		})
 	);
 
-	// Runtime validation
+	const nodeName = getCredentialTypeNameOrThrow(CredentialType.OPENAI);
+
+	// Runtime validations
 	if (!data.variableName) {
 		await publish(
 			openAiChannel().status({
@@ -46,9 +53,10 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 		);
 
 		throw new NonRetriableError(
-			"Variable name not configured from OpenAI node."
+			`Variable name not configured from ${nodeName} node.`
 		);
 	}
+
 	if (!data.userPrompt) {
 		await publish(
 			openAiChannel().status({
@@ -57,11 +65,25 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 			})
 		);
 
-		throw new NonRetriableError("User prompt not configured from OpenAI node.");
+		throw new NonRetriableError(
+			`User prompt not configured from ${nodeName} node.`
+		);
 	}
 
-	// TODO: Throw error if credentials is missing
+	if (!data.credentialId) {
+		await publish(
+			openAiChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
 
+		throw new NonRetriableError(
+			`Credential ID is missing from ${nodeName} node.`
+		);
+	}
+
+	// Syntax templating
 	const systemPrompt = data.systemPrompt
 		? Handlebars.compile(data.systemPrompt)(context)
 		: "You are a helpful assistant.";
@@ -87,15 +109,32 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		throw new NonRetriableError(
-			`Failed to resolve user prompt template from OpenAI node: ${errorMessage}`
+			`Failed to resolve user prompt template from ${nodeName} node: ${errorMessage}`
 		);
 	}
 
-	// TODO: Fetch credentials that user selected
-	const credentialValue = process.env.OPENAI_API_KEY;
+	// Fetch credential
+	let credential;
+	try {
+		credential = await step.run(STEP_GET_REQUIRED_CREDENTIAL, async () => {
+			return await getRequiredCredential(
+				data.credentialId ?? "",
+				CredentialType.OPENAI
+			);
+		});
+	} catch (error) {
+		await publish(
+			openAiChannel().status({
+				nodeId,
+				status: "error",
+			})
+		);
+
+		throw error;
+	}
 
 	const openAi = createOpenAI({
-		apiKey: credentialValue,
+		apiKey: credential.value,
 	});
 
 	try {
