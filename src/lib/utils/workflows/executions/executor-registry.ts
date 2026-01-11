@@ -10,6 +10,7 @@ import {
 	anthropicExecutor,
 	googleFormTriggerExecutor,
 	discordExecutor,
+	slackExecutor,
 } from "./executors";
 import { manualTriggerExecutor } from "./executors/manual-trigger-executor";
 import { stripeTriggerExecutor } from "./executors/stripe-trigger-executor";
@@ -26,7 +27,7 @@ export const executorRegistry: TExecutorRegistry = {
 	[NodeType.ANTHROPIC]: anthropicExecutor,
 	/* MESSAGER NODES */
 	[NodeType.DISCORD]: discordExecutor,
-	[NodeType.SLACK]: geminiExecutor, // TODO: Create slackExecutor
+	[NodeType.SLACK]: slackExecutor,
 
 	/* TRIGGERS */
 	[NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,

@@ -81,6 +81,13 @@ const executionNodes: INodeTypeOption[] = [
 		description: "Send a message to Discord",
 		icon: "/logos/discord.svg",
 	},
+	/* SLACK */
+	{
+		type: TNodeType.SLACK,
+		label: "Slack",
+		description: "Send a message to Slack",
+		icon: "/logos/slack.svg",
+	},
 ];
 
 function NodeSelector({ open, onOpenChange, children }: INodeSelectorProps) {

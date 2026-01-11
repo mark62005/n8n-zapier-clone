@@ -5,6 +5,7 @@ import { NodeType } from "@/generated/prisma/enums";
 import InitialNode from "@/components/dashboard/editors/nodes/InitialNode";
 import HttpRequestNode from "@/components/dashboard/editors/nodes/executions/http-request/HttpRequestNode";
 import DiscordNode from "@/components/dashboard/editors/nodes/executions/messagers/discord/DiscordNode";
+import SlackNode from "@/components/dashboard/editors/nodes/executions/messagers/slack/SlackNode";
 import GeminiNode from "@/components/dashboard/editors/nodes/executions/gemini/GeminiNode";
 import OpenAiNode from "@/components/dashboard/editors/nodes/executions/open-ai/OpenAiNode";
 import AnthropicNode from "@/components/dashboard/editors/nodes/executions/anthropic/AnthropicNode";
@@ -22,6 +23,7 @@ export const NODE_COMPONENTS_CONFIG = {
 	[NodeType.ANTHROPIC]: AnthropicNode,
 	/* MESSAGER NODES */
 	[NodeType.DISCORD]: DiscordNode,
+	[NodeType.SLACK]: SlackNode,
 
 	/* TRIGGERS */
 	[NodeType.MANUAL_TRIGGER]: ManualTriggerNode,

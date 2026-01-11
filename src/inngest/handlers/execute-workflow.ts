@@ -11,6 +11,7 @@ import {
 	anthropicChannel,
 	stripeTriggerChannel,
 	discordChannel,
+	slackChannel,
 } from "@/inngest/channels";
 import { manualTriggerChannel } from "../channels/manual-trigger";
 import { googleFormTriggerChannel } from "../channels/google-form-trigger";
@@ -31,6 +32,7 @@ export const executeWorkflow = inngest.createFunction(
 			anthropicChannel(),
 			/* MESSAGER NODES */
 			discordChannel(),
+			slackChannel(),
 
 			/* TRIGGER NODES */
 			manualTriggerChannel(),
