@@ -21,7 +21,7 @@ import { editorAtom } from "@/store/atoms";
 import { IGeneralEditorProps } from "@/types/app/components/component-props/dashboard/editors/IGeneralEditorProps";
 import { useSuspenseWorkflowById } from "@/hooks/workflows/use-suspense-workflow-by-id";
 import { NodeType } from "@/generated/prisma/enums";
-import { NODE_COMPONENTS_CONFIG } from "@/lib/constants/configs/dashboard/editors/node-components";
+import { NODE_COMPONENTS_CONFIG } from "@/lib/constants/configs/dashboard/nodes/node-components";
 import AddNodeButton from "./buttons/AddNodeButton";
 import ExecuteWorkflowButton from "./buttons/ExecuteWorkflowButton";
 
