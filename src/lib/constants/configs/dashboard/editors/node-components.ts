@@ -4,6 +4,8 @@ import { NodeType } from "@/generated/prisma/enums";
 
 import InitialNode from "@/components/dashboard/editors/nodes/InitialNode";
 import HttpRequestNode from "@/components/dashboard/editors/nodes/executions/http-request/HttpRequestNode";
+import DiscordNode from "@/components/dashboard/editors/nodes/executions/messagers/discord/DiscordNode";
+import SlackNode from "@/components/dashboard/editors/nodes/executions/messagers/slack/SlackNode";
 import GeminiNode from "@/components/dashboard/editors/nodes/executions/gemini/GeminiNode";
 import OpenAiNode from "@/components/dashboard/editors/nodes/executions/open-ai/OpenAiNode";
 import AnthropicNode from "@/components/dashboard/editors/nodes/executions/anthropic/AnthropicNode";
@@ -14,10 +16,15 @@ import StripeTriggerNode from "@/components/dashboard/editors/nodes/triggers/str
 export const NODE_COMPONENTS_CONFIG = {
 	[NodeType.INITIAL]: InitialNode,
 	[NodeType.HTTP_REQUEST]: HttpRequestNode,
+
 	/* AI NODES */
 	[NodeType.GEMINI]: GeminiNode,
 	[NodeType.OPENAI]: OpenAiNode,
 	[NodeType.ANTHROPIC]: AnthropicNode,
+	/* MESSAGER NODES */
+	[NodeType.DISCORD]: DiscordNode,
+	[NodeType.SLACK]: SlackNode,
+
 	/* TRIGGERS */
 	[NodeType.MANUAL_TRIGGER]: ManualTriggerNode,
 	[NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerNode,

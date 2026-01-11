@@ -4,6 +4,9 @@ export * from "./http-request-executor";
 export * from "./gemini-executor";
 export * from "./openai-executor";
 export * from "./anthropic-executor";
+/* MESSAGER NODES */
+export * from "./discord-executor";
+export * from "./slack-executor";
 
 /* TRIGGERS */
 export * from "./manual-trigger-executor";

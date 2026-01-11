@@ -4,6 +4,9 @@ export * from "./THttpRequestToken";
 export * from "./TGeminiToken";
 export * from "./TOpenAiToken";
 export * from "./TAnthropicToken";
+/* MESSAGER NODES */
+export * from "./TDiscordToken";
+export * from "./TSlackToken";
 
 /* TRIGGERS */
 export * from "./google-form-trigger";

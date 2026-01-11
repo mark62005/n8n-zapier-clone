@@ -4,6 +4,9 @@ export * from "./http-request-channel";
 export * from "./gemini-channel";
 export * from "./openai-channel";
 export * from "./anthropic-channel";
+/* MESSAGER NODES */
+export * from "./discord-channel";
+export * from "./slack-channel";
 
 /* TRIGGERS */
 export * from "./manual-trigger";

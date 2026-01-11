@@ -10,6 +10,8 @@ import {
 	openAiChannel,
 	anthropicChannel,
 	stripeTriggerChannel,
+	discordChannel,
+	slackChannel,
 } from "@/inngest/channels";
 import { manualTriggerChannel } from "../channels/manual-trigger";
 import { googleFormTriggerChannel } from "../channels/google-form-trigger";
@@ -23,10 +25,15 @@ export const executeWorkflow = inngest.createFunction(
 		event: "workflows/execute.workflow",
 		channels: [
 			httpRequestChannel(),
+
 			/* AI NODES */
 			geminiChannel(),
 			openAiChannel(),
 			anthropicChannel(),
+			/* MESSAGER NODES */
+			discordChannel(),
+			slackChannel(),
+
 			/* TRIGGER NODES */
 			manualTriggerChannel(),
 			googleFormTriggerChannel(),
