@@ -1,4 +1,4 @@
-import { IExecutionDetailsPageProps } from "@/types/app/page-props/dashboard/non-editor/IExecutionDetailsPageProps";
+import { IExecutionDetailsPageProps } from "@/types/app/page-props/dashboard/non-editor/executions/IExecutionDetailsPageProps";
 import { requireAuth } from "@/lib/utils/auth";
 
 async function ExecutionDetailsPage({ params }: IExecutionDetailsPageProps) {
