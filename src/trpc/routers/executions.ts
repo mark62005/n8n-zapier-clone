@@ -14,6 +14,14 @@ export const executionsRouter = createTRPCRouter({
 					id: input.id,
 					workflow: { userId: ctx.authSession.user.id },
 				},
+				include: {
+					workflow: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+				},
 			});
 		}),
 	/* GET MULTIPLE EXECUTION HISTORY OF A WORKFLOW */
