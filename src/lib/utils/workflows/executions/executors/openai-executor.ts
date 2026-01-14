@@ -15,6 +15,7 @@ import { openAiChannel } from "@/inngest/channels";
 import { createNodeStatusPublisher } from "@/inngest/utils";
 import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
 import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
+import { decrypt } from "@/lib/utils/credentials/encryption";
 
 export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 	data,
@@ -101,7 +102,7 @@ export const openAiExecutor: TNodeExecutor<IOpenAiNodeData> = async ({
 	}
 
 	const openAi = createOpenAI({
-		apiKey: credential.value,
+		apiKey: decrypt(credential.value),
 	});
 
 	try {

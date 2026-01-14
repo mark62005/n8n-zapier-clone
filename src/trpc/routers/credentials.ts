@@ -4,6 +4,7 @@ import { PAGINATION } from "@/lib/constants/configs/dashboard/Pagination";
 import z from "zod";
 import prisma from "@/lib/db/db";
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "..";
+import { encrypt } from "@/lib/utils/credentials/encryption";
 
 export const credentialsRouter = createTRPCRouter({
 	/* GET CREDENTIAL OF A USER BY ID */
@@ -106,7 +107,7 @@ export const credentialsRouter = createTRPCRouter({
 					name,
 					userId: ctx.authSession.user.id,
 					type,
-					value, // TODO: Encrypt value in production
+					value: encrypt(value),
 				},
 			});
 		}),
@@ -128,7 +129,7 @@ export const credentialsRouter = createTRPCRouter({
 				data: {
 					name,
 					type,
-					value, // TODO: Encrypt value in production
+					value: encrypt(value),
 				},
 			});
 		}),

@@ -15,6 +15,7 @@ import { geminiChannel } from "@/inngest/channels";
 import { createNodeStatusPublisher } from "@/inngest/utils";
 import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
 import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
+import { decrypt } from "@/lib/utils/credentials/encryption";
 
 export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 	data,
@@ -101,7 +102,7 @@ export const geminiExecutor: TNodeExecutor<IGeminiNodeData> = async ({
 	}
 
 	const geminiAi = createGoogleGenerativeAI({
-		apiKey: credential.value,
+		apiKey: decrypt(credential.value),
 	});
 
 	try {

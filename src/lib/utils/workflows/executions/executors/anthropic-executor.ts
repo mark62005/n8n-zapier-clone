@@ -15,6 +15,7 @@ import { anthropicChannel } from "@/inngest/channels";
 import { createNodeStatusPublisher } from "@/inngest/utils";
 import { getRequiredCredential } from "@/lib/utils/credentials/get-required-credentials";
 import { getCredentialTypeNameOrThrow } from "@/lib/utils/credentials/type-name-registry";
+import { decrypt } from "@/lib/utils/credentials/encryption";
 
 export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 	data,
@@ -101,7 +102,7 @@ export const anthropicExecutor: TNodeExecutor<IAnthropicNodeData> = async ({
 	}
 
 	const anthropic = createAnthropic({
-		apiKey: credential.value,
+		apiKey: decrypt(credential.value),
 	});
 
 	try {
