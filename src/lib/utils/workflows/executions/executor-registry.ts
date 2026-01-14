@@ -18,7 +18,7 @@ import { stripeTriggerExecutor } from "./executors/stripe-trigger-executor";
 export type TExecutorRegistry = Record<TNodeType, TNodeExecutor>;
 
 export const executorRegistry: TExecutorRegistry = {
-	[NodeType.INITIAL]: manualTriggerExecutor, // TODO: Create initialExecutor
+	[NodeType.INITIAL]: manualTriggerExecutor,
 	[NodeType.HTTP_REQUEST]: httpRequestExecutor,
 
 	/* AI NODES */

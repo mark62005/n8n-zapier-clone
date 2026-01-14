@@ -10,8 +10,5 @@ export const httpRequestNodeSettingsFormSchema = z.object({
 		}),
 	endpoint: z.string().min(1, { message: "Please enter a valid URL." }),
 	method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
-	body: z
-		.string()
-		// .refine(), TODO
-		.optional(),
+	body: z.string().optional(),
 });
