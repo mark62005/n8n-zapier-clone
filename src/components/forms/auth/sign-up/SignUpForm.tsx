@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { signUpFormSchema, TSignUpFormValues } from "./SignUpFormSchema";
+import { signInWith } from "@/lib/auth/utils/social-sign-in";
 
 const SIGN_IN_FORM_DEFAULT_VALUES: TSignUpFormValues = {
 	name: "",
@@ -41,6 +42,18 @@ function SignInForm() {
 	});
 
 	const isPending = form.formState.isSubmitting;
+
+	async function signInWithGoogle() {
+		signInWith("google", () => {
+			router.push("/");
+		});
+	}
+
+	async function signInWithGithub() {
+		signInWith("github", () => {
+			router.push("/");
+		});
+	}
 
 	async function onSignUpSubmit(values: TSignUpFormValues) {
 		await authClient.signUp.email(
@@ -80,6 +93,7 @@ function SignInForm() {
 										variant="outline"
 										type="button"
 										disabled={isPending}
+										onClick={signInWithGithub}
 										className="w-full"
 									>
 										<Image
@@ -96,6 +110,7 @@ function SignInForm() {
 										variant="outline"
 										type="button"
 										disabled={isPending}
+										onClick={signInWithGoogle}
 										className="w-full"
 									>
 										<Image
