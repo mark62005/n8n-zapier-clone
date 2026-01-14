@@ -5,6 +5,6 @@ import CredentialForm from "@/components/forms/dashboard/credentials/CredentialF
 async function NewCredentialPage() {
 	await requireAuth();
 
-	return <CredentialForm variant="new" />;
+	return <CredentialForm />;
 }
 export default NewCredentialPage;
